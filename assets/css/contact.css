@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: white; 
+}
+
+.contact-container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: rgba(0, 109, 109, 0.6);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.contact-container h1 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.contact-container p {
+    margin-bottom: 30px;
+}
+
+/* Layout */
+.contact-content {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+/* Left Section: Contact Info */
+.contact-info {
+    flex: 1;
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Adjust gap for better spacing */
+}
+
+.info-item .icon {
+    font-size: 28px; /* Adjust icon size */
+    color: white; /* Ensure icons have proper color */
+    line-height: 1; /* Aligns icon vertically */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px; /* Consistent icon width */
+    min-height: 40px; /* Consistent icon height */
+    background-color: rgba(255, 255, 255, 0.1); /* Optional icon background for styling */
+    border-radius: 50%; /* Makes icon background circular */
+    cursor: pointer;
+}
+
+.info-item p {
+    margin: 0; /* Ensure no extra margin in text */
+    font-size: 16px; /* Adjust text size for readability */
+    color: white;
+    line-height: 1.4; /* For proper line height with text */
+}
+
+/* Right Section: Contact Form */
+.contact-form-container {
+    flex: 1;
+    min-width: 300px;
+}
+
+.contact-form .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.contact-form label {
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    color: black;
+}
+
+.contact-form textarea {
+    resize: none;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    background-color: #fff;
+    outline: none;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #007a73;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #026460;
+}
+
+
+

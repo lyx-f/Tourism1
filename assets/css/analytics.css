@@ -1,0 +1,139 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+    color: #444;
+}
+
+/* Table Styles */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f4f4f4;
+    color: #444;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+/* Button Styles */
+button {
+    padding: 8px 16px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    transition: background-color 0.3s;
+    background-color: #333;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button[onclick*="approve"] {
+    background-color: #4CAF50; /* Green for approval */
+}
+
+button[onclick*="reject"] {
+    background-color: #f44336; /* Red for rejection */
+}
+
+/* Message Styles */
+td[colspan="9"] {
+    font-size: 16px;
+    font-style: italic;
+    color: #666;
+}
+
+.flex{
+    display: flex;
+}
+.justify-between{
+    justify-content: space-between;
+}
+.items-center{
+    align-items: center;
+}
+.text-center{
+    text-align: center;
+    margin-bottom: 0;
+}
+.report-container{
+    background-color: white;
+    border: 1px solid rgb(228, 228, 228);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    /* width: 100vw; */
+}
+.chart-container{
+    gap: 10px;
+}
+.download-button > a{
+    color: white;
+}
+.chart-container > div{
+    background-color: white;
+    border: 1px solid rgb(228, 228, 228);
+    padding: 10px;
+    border-radius: 10px;
+}
+#ratingsChart{
+    height: 100%;
+}
+.ratings-chart{
+    flex:1;
+}
+.bookings-chart{
+    flex:1;
+    /* width: 1000px; */
+}
+@media screen and (max-width: 768px) {
+    table {
+        width: 100%;
+    }
+
+    th, td {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+}

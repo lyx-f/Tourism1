@@ -1,0 +1,95 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: rgba(0, 109, 109, 0.6);
+}
+
+.logo img {
+    height: 80px; 
+    width: auto; 
+}
+
+nav {
+    display: flex; /* Flexbox for navigation links */
+}
+
+nav a {
+    color: white;
+    text-decoration: none; 
+    margin: 0 15px;
+    transition: color 0.3s; 
+}
+
+nav a:hover {
+    color: #00bcd4; 
+}
+.weather-container {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    color: white;
+    font-size: 16px;
+}
+.weather-icon {
+    font-size: 24px; 
+    margin-right: 8px;
+}
+
+.search-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Adjust gap between search and profile icon */
+}
+
+.profile-icon i {
+    color: #fff; 
+    cursor: pointer;
+}
+
+.profile-icon i:hover {
+    color: #ccc;
+}
+
+
+.search-container {
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: white; 
+}
+
+.search-bar {
+    padding: 10px;
+    border: none;
+    outline: none;
+    width: 200px; 
+}
+
+.search-button {
+    padding: 10px;
+    border: none;
+    background-color: #00796b; 
+    color: white;
+    cursor: pointer; 
+}
+
+.search-button:hover {
+    background-color: #004d40;
+}
+
+.profile-icon img {
+    width: 30px; 
+    height: 30px; 
+    margin-left: 10px; /* Spacing from the search bar */
+    
+}

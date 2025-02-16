@@ -1,0 +1,127 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url('../img/mati-dav.jpg');
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+    color: white;
+    line-height: 1.6;
+}
+
+.container {
+    width: 100%;
+    margin: 1;
+    
+}
+
+.hero-container {
+    display: flex; /* Flexbox layout for hero and cards side by side */
+    justify-content: space-between; /* Space between hero and cards */
+    align-items: center; /* Align items vertically */
+    margin: 20px; 
+}
+
+.hero-content {
+    flex: 1;
+    padding: 20px; /* Padding around the content */
+    max-width: 50%;
+
+}
+
+.hero-content h1 {
+    font-size: 3rem; 
+    font-weight: bold;
+    line-height: 1.2; /* Adjust line height for better readability */
+}
+.hero-content .outlined-text {
+    font-size: 3rem;
+    font-weight: 600;
+    color: transparent;
+    -webkit-text-stroke: 2px  #ffffffdf;
+    text-shadow: 2px white; 
+}
+.hero-content p {
+    font-size: 1.5rem; 
+    line-height: 1.5; /* Space between lines for readability */
+}
+.destination-container {
+    display: flex;
+    flex-direction: row; /* Stack cards horizontally */
+    justify-content: flex-start; /* Align cards to the left */
+    margin-left: 20px; 
+    margin-top: 70px;
+}
+
+.card {
+    background-color: rgba(0, 109, 109, 0.6);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    width: 300px; 
+    margin-right: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column; /* Stack card content vertically */
+    justify-content: space-between; /* Space between content and button */
+}
+
+.card img {
+    width: 100%;
+    height: 150px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    font-size: 22px;
+    margin-bottom: 20px;}
+
+.card p {
+    font-size: 14px;
+    margin-bottom: 70px;
+}
+
+.card a {
+    background-color: #007a73;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.map-button-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 20px;
+}
+
+.map-button {
+    display: inline-flex;
+    align-items: center;
+    background-color: #007a73;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none; /* Remove underline */
+    font-size: 18px; 
+    transition: background-color 0.3s ease;
+}
+
+.map-button i {
+    margin-right: 10px; 
+}
+
+.map-button:hover {
+    background-color: #004d40;
+    cursor: pointer;
+}

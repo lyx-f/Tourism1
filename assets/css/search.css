@@ -1,0 +1,78 @@
+.search-layout {
+    display: flex;
+    flex-direction: column; /* Stack categories-container and map-container vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    padding: 20px;
+    gap: 20px; /* Adds spacing between categories-container and map-container */
+}
+.categories-container {
+    width: 50%; /* Set a width relative to the viewport or parent */
+    background-color: rgba(0, 109, 109, 0.6);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.categories-container h3 {
+    text-align: center;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.categories {
+    display: flex; /* Change grid to flex for horizontal alignment */
+    justify-content: center; /* Center icons horizontally */
+    gap: 20px; /* Spacing between categories */
+    width: 100%;
+}
+
+.category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #007a73;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    color: white;
+}
+.category:hover {
+    background-color: #005a55;
+}
+
+.category.active {
+    background-color: #004a44; 
+}
+
+.map-container {
+    width: 90%; 
+    margin: 0 auto; /* Center the container horizontally */
+    background-color: rgba(0, 109, 109, 0.6); 
+    padding: 20px; /* Padding around the content */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+}
+
+.map-container h2 {
+    font-size: 24px;
+    color: white; /* Text color for contrast */
+    margin-bottom: 15px; /* Spacing below the title */
+    text-align: center; 
+    width: 100%; 
+}
+
+#map {
+    height: 600px;
+    width: 100%; 
+    border-radius: 10px; /* Rounded corners for the map */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for the map */
+}

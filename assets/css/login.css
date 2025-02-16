@@ -1,0 +1,128 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  background: url('../img/visual.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  width: 80%;
+  max-width: 1200px;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.slogan {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  justify-content: center; 
+  text-align: center;
+  z-index: 1;
+}
+
+.slogan .bold-text {
+  font-size: 4rem; 
+  font-weight: 900; 
+  color: #ffffffdf;
+  margin-bottom: 0.5rem;
+}
+
+.slogan .outlined-text {
+  font-size: 7rem;
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 2px  #ffffffdf;
+  text-shadow: 2px white; 
+  margin-bottom: 0.5rem;
+}
+
+.slogan p {
+  font-size: 1.7rem;
+  color: #fff;
+  margin: 0;
+}
+
+
+.login-form {
+  flex: 1;
+  max-width: 400px;
+  margin-left: auto;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 10px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px); 
+  -webkit-backdrop-filter: blur(2px); 
+}
+
+.text {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #006d6d;
+}
+
+.field {
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.field .fas {
+  margin-right: 20px;
+  color: #006d6d;
+  font-size: 26px; 
+
+}
+
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background-color: #006d6d;
+  color: #fff;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.link {
+  margin-top: 15px;
+  text-align: center;
+    color: #006d6d;
+
+}
+
+.link a {
+  color: #006d6d;
+  text-decoration: none;
+}
+
+.link a:hover {
+  text-decoration: underline;
+}
+
+
+main {
+  padding: 20px;
+}
