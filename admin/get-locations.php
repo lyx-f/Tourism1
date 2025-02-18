@@ -2,7 +2,7 @@
 include('../config/database.php'); 
 
 // Query to get locations and their categories from the database
-$sql = "SELECT name, latitude, longitude, category FROM locations"; // Include the 'category' field
+$sql = "SELECT name, latitude, longitude, category FROM locations WHERE status = 'active'"; // Include the 'category' field
 $result = $conn->query($sql);
 
 $locations = array();
