@@ -7,10 +7,8 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Get the username from session
-$username = $_SESSION['username'];
-
 include("../../includes/homepage_navbar.php");
+
 ?>
 
 <!DOCTYPE html>
@@ -27,7 +25,7 @@ include("../../includes/homepage_navbar.php");
 <div class="profile-container">
         <div class="profile">
             <i class="fas fa-user-circle fa-4x profile-icon"></i> 
-            <h2><?php echo $username; ?></h2>
+            <h2><?=  $_SESSION['username'] ?></h2>
             <button class="toggle-btn">+</button>
         </div>
         <div class="icon-row">
