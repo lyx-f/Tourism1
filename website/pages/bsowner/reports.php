@@ -73,12 +73,14 @@ if (!$business_id) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports - Booking Summary</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -95,7 +97,8 @@ if (!$business_id) {
         <!-- Main Content -->
         <main class="content">
             <h1>Booking Reports</h1>
-            <p>Below is an overview of the booking activity and detailed reports for <strong><?php echo htmlspecialchars($business_name); ?></strong>.</p>
+            <p>Below is an overview of the booking activity and detailed reports for
+                <strong><?php echo htmlspecialchars($business_name); ?></strong>.</p>
 
             <!-- Summary Section -->
             <section class="cards">
@@ -119,10 +122,18 @@ if (!$business_id) {
                 $result = $query->get_result();
 
                 if ($result && $row = $result->fetch_assoc()) {
-                    $summary["total"] = $row["total"];
-                    $summary["pending"] = $row["pending"];
-                    $summary["confirmed"] = $row["confirmed"];
-                    $summary["canceled"] = $row["canceled"];
+                    $summary["total"] = $row["total"] ?? 0;
+                    $summary["pending"] = $row["pending"] ?? 0;
+                    $summary["confirmed"] = $row["confirmed"] ?? 0;
+                    $summary["canceled"] = $row["canceled"] ?? 0;
+                } else {
+                    // Set defaults if no result
+                    $summary = [
+                        "total" => 0,
+                        "pending" => 0,
+                        "confirmed" => 0,
+                        "canceled" => 0
+                    ];
                 }
                 $query->close();
 
@@ -186,4 +197,5 @@ if (!$business_id) {
         </main>
     </div>
 </body>
+
 </html>
