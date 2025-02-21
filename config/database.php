@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost"; // or your database server name
-$username = "u674941284_tourmatic_admi";        // your MySQL username
-$password = "tourmaticSysad69";            // your MySQL password
-$dbname = "u674941284_tourism";       // the name of your database
+$username = "root";        // your MySQL username
+$password = "";            // your MySQL password
+$dbname = "tourism";       // the name of your database
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

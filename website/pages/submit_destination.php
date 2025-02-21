@@ -37,14 +37,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     mysqli_stmt_close($stmt_user);
 
-    // Sanitize inputs
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $phone = filter_var($_POST['phone'], FILTER_SANITIZE_STRING);
-    $destinationName = filter_var($_POST['destinationName'], FILTER_SANITIZE_STRING);
-    $location = filter_var($_POST['location'], FILTER_SANITIZE_STRING);
-    $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
+    // Sanitize inputs using better alternatives
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) ? $_POST['email'] : null;
+    $phone = htmlspecialchars(trim($_POST['phone']), ENT_QUOTES, 'UTF-8');
+    $destinationName = htmlspecialchars(trim($_POST['destinationName']), ENT_QUOTES, 'UTF-8');
+    $location = htmlspecialchars(trim($_POST['location']), ENT_QUOTES, 'UTF-8');
+    $description = htmlspecialchars(trim($_POST['description']), ENT_QUOTES, 'UTF-8');
     $price = isset($_POST['price']) ? floatval($_POST['price']) : 0.0;
     $image = basename($_FILES['image']['name']); // Image file
+
 
     // File upload logic
     $targetDir = "../../assets/img/";
