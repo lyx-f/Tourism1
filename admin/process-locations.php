@@ -10,20 +10,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // Include database connection
 include('../config/database.php');
 
-// Debugging: Check if POST variables are set
-if (!isset($_POST['id'])) {
-    echo "Invalid request.";
-    exit();
-}
-
-$id = intval($_POST['id']);
-
-
-// Debugging: Check values of $id and $action
-if (empty($id)) {
-    echo "Invalid ID or Action.";
-    exit();
-}
 
 // Process the action
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -55,9 +41,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         mysqli_stmt_close($stmt);
 
-    } else {
-        echo "Invalid ID or Action.";
-        exit();
+    } else {    
+        $name = $_POST["name"];
+        $latitude = $_POST["latitude"];
+        $longitude = $_POST["longitude"];
+    
+        // Insert query using prepared statement
+        $stmt = $conn->prepare("INSERT INTO locations (name, latitude, longitude) VALUES (?, ?, ?)");
+        $stmt->bind_param("sdd", $name, $latitude, $longitude);
+    
+        if ($stmt->execute()) {
+            echo "Location added successfully!";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+    
+        $stmt->close();
     }
 }
 
