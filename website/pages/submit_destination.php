@@ -37,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     mysqli_stmt_close($stmt_user);
 
-    // Sanitize inputs using better alternatives
-    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) ? $_POST['email'] : null;
-    $phone = htmlspecialchars(trim($_POST['phone']), ENT_QUOTES, 'UTF-8');
-    $destinationName = htmlspecialchars(trim($_POST['destinationName']), ENT_QUOTES, 'UTF-8');
-    $location = htmlspecialchars(trim($_POST['location']), ENT_QUOTES, 'UTF-8');
-    $description = htmlspecialchars(trim($_POST['description']), ENT_QUOTES, 'UTF-8');
+    //setup post variables
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $destinationName = $_POST['destinationName'];
+    $location = $_POST['location'];
+    $description = $_POST['description'];
     $price = isset($_POST['price']) ? floatval($_POST['price']) : 0.0;
     $image = basename($_FILES['image']['name']); // Image file
 
