@@ -64,6 +64,52 @@ if ($is_business_owner) {
     }
     $stmt_business->close();
 }
+// Fetch feedbacks for the business
+$sql_feedback = "SELECT rating FROM feedbacks WHERE destination_id = ?";
+$stmt_feedback = $conn->prepare($sql_feedback);
+
+if (!$stmt_feedback) {
+    die("Prepare failed for feedback query: " . $conn->error);
+}
+
+$stmt_feedback->bind_param("i", $business_id);
+$stmt_feedback->execute();
+$result_feedback = $stmt_feedback->get_result();
+
+// Initialize counters
+$totalFeedbacks = 0;
+$excellentFeedbacks = 0;
+$goodFeedbacks = 0;
+$neutralFeedbacks = 0;
+$poorFeedbacks = 0;
+$veryPoorFeedbacks = 0;
+
+// Process feedback results
+while ($row_feedback = $result_feedback->fetch_assoc()) {
+    $totalFeedbacks++;
+
+    switch ($row_feedback['rating']) {
+        case 5:
+            $excellentFeedbacks++;
+            break;
+        case 4:
+            $goodFeedbacks++;
+            break;
+        case 3:
+            $neutralFeedbacks++;
+            break;
+        case 2:
+            $poorFeedbacks++;
+            break;
+        case 1:
+            $veryPoorFeedbacks++;
+            break;
+    }
+}
+
+$stmt_feedback->close();
+
+
 
 // Ensure we focus only on bookings related to this business
 if (!$business_id) {
@@ -100,148 +146,213 @@ if (!$business_id) {
             <p>Below is an overview of the booking activity and detailed reports for
                 <strong><?php echo htmlspecialchars($business_name); ?></strong>.
             </p>
+            <section id="ratingsChart"
+                style="padding:10px; border:solid 1px gray; border-radius: 10px; height:200px; background-color:white;   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-bottom:20px;">
+                <canvas id="feedbackChart"></canvas>
+            </section>
+            <section style="border-top:solid 1px gray; padding-top: 20px; "> 
 
-            <?php
-            $selected_month = isset($_GET['month']) ? $_GET['month'] : date('m');
-            $selected_year = isset($_GET['year']) ? $_GET['year'] : date('Y');
 
-            $months = [
-                "01" => "January",
-                "02" => "February",
-                "03" => "March",
-                "04" => "April",
-                "05" => "May",
-                "06" => "June",
-                "07" => "July",
-                "08" => "August",
-                "09" => "September",
-                "10" => "October",
-                "11" => "November",
-                "12" => "December"
-            ];
+                <?php
+                $selected_month = isset($_GET['month']) ? $_GET['month'] : date('m');
+                $selected_year = isset($_GET['year']) ? $_GET['year'] : date('Y');
 
-            echo "<form style='width: fit-content; display: inline-flex; flex-direction:row; margin-bottom: 10px;' method='GET' action=''>
+                $months = [
+                    "01" => "January",
+                    "02" => "February",
+                    "03" => "March",
+                    "04" => "April",
+                    "05" => "May",
+                    "06" => "June",
+                    "07" => "July",
+                    "08" => "August",
+                    "09" => "September",
+                    "10" => "October",
+                    "11" => "November",
+                    "12" => "December"
+                ];
+
+                echo "<form style='width: fit-content; display: inline-flex; flex-direction:row; margin-bottom: 10px;' method='GET' action=''>
                 <div>
                 <label style='width: fit-content;' for='month'>Month:</label>
                 <select name='month' id='month'>";
-            foreach ($months as $key => $value) {
-                echo "<option value='$key' " . ($selected_month == $key ? "selected" : "") . ">$value</option>";
-            }
-            echo "</select>
+                foreach ($months as $key => $value) {
+                    echo "<option value='$key' " . ($selected_month == $key ? "selected" : "") . ">$value</option>";
+                }
+                echo "</select>
                         </div>
                         <div>
                 <label style='width: fit-content;' for='year'>Year:</label>
                 <select name='year' id='year'>";
-            for ($y = date('Y'); $y >= date('Y') - 5; $y--) {
-                echo "<option value='$y' " . ($selected_year == $y ? "selected" : "") . ">$y</option>";
-            }
-            echo "</select>
+                for ($y = date('Y'); $y >= date('Y') - 5; $y--) {
+                    echo "<option value='$y' " . ($selected_year == $y ? "selected" : "") . ">$y</option>";
+                }
+                echo "</select>
                         </div>
                 <button style='width:fit-content; padding: 4px 10px 4px 10px; font-size: 14px' type='submit'>Filter</button>
               </form>";
 
-            ?>
-            <form style="width: fit-content" method="GET" action="generate_report.php">
-                <input type="hidden" name="month" value="<?php echo $selected_month; ?>">
-                <input type="hidden" name="year" value="<?php echo $selected_year; ?>">
-                <button type="submit" style="padding: 6px 12px; font-size: 14px;">Download PDF</button>
-            </form>
-            <?php
+                ?>
 
-            // Initialize counters before executing the query
-            $totalBookings = 0;
-            $pendingBookings = 0;
-            $confirmedBookings = 0;
-            $cancelledBookings = 0;
+                <form style="width: fit-content" method="GET" action="generate_report.php">
+                    <input type="hidden" name="month" value="<?php echo $selected_month; ?>">
+                    <input type="hidden" name="year" value="<?php echo $selected_year; ?>">
+                    <button type="submit" style="padding: 6px 12px; font-size: 14px;">Download PDF</button>
+                </form>
+                <?php
 
-            // Fetch detailed booking data for this business
-            $query = $conn->prepare("SELECT id, CONCAT(first_name, ' ', last_name) AS customer_name, status, arrival_date FROM bookings WHERE business_id = ? AND MONTH(arrival_date) = ? AND YEAR(arrival_date) = ? ORDER BY arrival_date DESC");
-            $query->bind_param("iii", $business_id, $selected_month, $selected_year);
-            $query->execute();
-            $result = $query->get_result();
+                // Initialize counters before executing the query
+                $totalBookings = 0;
+                $pendingBookings = 0;
+                $confirmedBookings = 0;
+                $cancelledBookings = 0;
 
-            // Process the results first
-            $bookings = [];
+                // Fetch detailed booking data for this business
+                $query = $conn->prepare("SELECT id, CONCAT(first_name, ' ', last_name) AS customer_name, status, arrival_date FROM bookings WHERE business_id = ? AND MONTH(arrival_date) = ? AND YEAR(arrival_date) = ? ORDER BY arrival_date DESC");
+                $query->bind_param("iii", $business_id, $selected_month, $selected_year);
+                $query->execute();
+                $result = $query->get_result();
 
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $totalBookings++;
+                // Process the results first
+                $bookings = [];
 
-                    // Count bookings based on status
-                    switch (strtolower($row['status'])) {
-                        case 'pending':
-                            $pendingBookings++;
-                            break;
-                        case 'accepted':
-                            $confirmedBookings++;
-                            break;
-                        case 'cancelled':
-                        case 'canceled': // Handling both spelling variations
-                            $cancelledBookings++;
-                            break;
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $totalBookings++;
+
+                        // Count bookings based on status
+                        switch (strtolower($row['status'])) {
+                            case 'pending':
+                                $pendingBookings++;
+                                break;
+                            case 'accepted':
+                                $confirmedBookings++;
+                                break;
+                            case 'cancelled':
+                            case 'canceled': // Handling both spelling variations
+                                $cancelledBookings++;
+                                break;
+                        }
+
+                        $bookings[] = $row; // Store row data for later use
                     }
-
-                    $bookings[] = $row; // Store row data for later use
                 }
-            }
 
-            $query->close();
+                $query->close();
 
-            ?>
-            <section class="cards">
-                <div class="card">
-                    <h3>Total Bookings</h3>
-                    <p><?php echo $totalBookings; ?></p>
-                </div>
-                <div class="card">
-                    <h3>Pending</h3>
-                    <p><?php echo $pendingBookings; ?></p>
-                </div>
-                <div class="card">
-                    <h3>Accepted</h3>
-                    <p><?php echo $confirmedBookings; ?></p>
-                </div>
-                <div class="card">
-                    <h3>Cancelled</h3>
-                    <p><?php echo $cancelledBookings; ?></p>
-                </div>
-            </section>
+                ?>
 
-            <section class="data-table">
-                <h2>Detailed Booking Report</h2>
+                <section class="cards">
+                    <div class="card">
+                        <h3>Total Bookings</h3>
+                        <p><?php echo $totalBookings; ?></p>
+                    </div>
+                    <div class="card">
+                        <h3>Pending</h3>
+                        <p><?php echo $pendingBookings; ?></p>
+                    </div>
+                    <div class="card">
+                        <h3>Accepted</h3>
+                        <p><?php echo $confirmedBookings; ?></p>
+                    </div>
+                    <div class="card">
+                        <h3>Cancelled</h3>
+                        <p><?php echo $cancelledBookings; ?></p>
+                    </div>
+                </section>
 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>Customer Name</th>
-                            <th>Status</th>
-                            <th>Booking Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        if (!empty($bookings)) {
-                            foreach ($bookings as $row) {
-                                echo "<tr>
+
+                <section class="data-table">
+                    <h2>Detailed Booking Report</h2>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer Name</th>
+                                <th>Status</th>
+                                <th>Booking Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if (!empty($bookings)) {
+                                foreach ($bookings as $row) {
+                                    echo "<tr>
                             <td>B" . htmlspecialchars($row['id']) . "</td>
                             <td>" . htmlspecialchars($row['customer_name']) . "</td>
                             <td>" . htmlspecialchars($row['status']) . "</td>
                             <td>" . date("d M Y", strtotime($row['arrival_date'])) . "</td>
                           </tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='4'>No bookings found for the selected period.</td></tr>";
                             }
-                        } else {
-                            echo "<tr><td colspan='4'>No bookings found for the selected period.</td></tr>";
-                        }
 
-                        $conn->close();
-                        ?>
-                    </tbody>
-                </table>
+                            $conn->close();
+                            ?>
+                        </tbody>
+                    </table>
+                </section>
             </section>
-
         </main>
     </div>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // PHP variables converted into JavaScript
+        const totalFeedbacks = <?php echo $totalFeedbacks; ?>;
+        const excellentFeedbacks = <?php echo $excellentFeedbacks; ?>;
+        const goodFeedbacks = <?php echo $goodFeedbacks; ?>;
+        const neutralFeedbacks = <?php echo $neutralFeedbacks; ?>;
+        const poorFeedbacks = <?php echo $poorFeedbacks; ?>;
+        const veryPoorFeedbacks = <?php echo $veryPoorFeedbacks; ?>;
+
+        // Get the canvas context
+        const ctx = document.getElementById("feedbackChart").getContext("2d");
+
+        // Create the chart
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Excellent (5★)", "Good (4★)", "Neutral (3★)", "Poor (2★)", "Very Poor (1★)"],
+                datasets: [{
+                    label: "Number of Feedbacks",
+                    data: [excellentFeedbacks, goodFeedbacks, neutralFeedbacks, poorFeedbacks, veryPoorFeedbacks],
+                    backgroundColor: [
+                        "rgba(46, 204, 113, 0.8)",  // Green (Excellent)
+                        "rgba(52, 152, 219, 0.8)",  // Blue (Good)
+                        "rgba(241, 196, 15, 0.8)",  // Yellow (Neutral)
+                        "rgba(230, 126, 34, 0.8)",  // Orange (Poor)
+                        "rgba(231, 76, 60, 0.8)"    // Red (Very Poor)
+                    ],
+                    borderColor: [
+                        "rgba(46, 204, 113, 1)",
+                        "rgba(52, 152, 219, 1)",
+                        "rgba(241, 196, 15, 1)",
+                        "rgba(230, 126, 34, 1)",
+                        "rgba(231, 76, 60, 1)"
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Feedback Count"
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
 
 </html>
