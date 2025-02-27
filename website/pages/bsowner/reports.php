@@ -98,65 +98,118 @@ if (!$business_id) {
         <main class="content">
             <h1>Booking Reports</h1>
             <p>Below is an overview of the booking activity and detailed reports for
-                <strong><?php echo htmlspecialchars($business_name); ?></strong>.</p>
+                <strong><?php echo htmlspecialchars($business_name); ?></strong>.
+            </p>
 
-            <!-- Summary Section -->
+            <?php
+            $selected_month = isset($_GET['month']) ? $_GET['month'] : date('m');
+            $selected_year = isset($_GET['year']) ? $_GET['year'] : date('Y');
+
+            $months = [
+                "01" => "January",
+                "02" => "February",
+                "03" => "March",
+                "04" => "April",
+                "05" => "May",
+                "06" => "June",
+                "07" => "July",
+                "08" => "August",
+                "09" => "September",
+                "10" => "October",
+                "11" => "November",
+                "12" => "December"
+            ];
+
+            echo "<form style='width: fit-content; display: inline-flex; flex-direction:row; margin-bottom: 10px;' method='GET' action=''>
+                <div>
+                <label style='width: fit-content;' for='month'>Month:</label>
+                <select name='month' id='month'>";
+            foreach ($months as $key => $value) {
+                echo "<option value='$key' " . ($selected_month == $key ? "selected" : "") . ">$value</option>";
+            }
+            echo "</select>
+                        </div>
+                        <div>
+                <label style='width: fit-content;' for='year'>Year:</label>
+                <select name='year' id='year'>";
+            for ($y = date('Y'); $y >= date('Y') - 5; $y--) {
+                echo "<option value='$y' " . ($selected_year == $y ? "selected" : "") . ">$y</option>";
+            }
+            echo "</select>
+                        </div>
+                <button style='width:fit-content; padding: 4px 10px 4px 10px; font-size: 14px' type='submit'>Filter</button>
+              </form>";
+
+            ?>
+            <form style="width: fit-content" method="GET" action="generate_report.php">
+                <input type="hidden" name="month" value="<?php echo $selected_month; ?>">
+                <input type="hidden" name="year" value="<?php echo $selected_year; ?>">
+                <button type="submit" style="padding: 6px 12px; font-size: 14px;">Download PDF</button>
+            </form>
+            <?php
+
+            // Initialize counters before executing the query
+            $totalBookings = 0;
+            $pendingBookings = 0;
+            $confirmedBookings = 0;
+            $cancelledBookings = 0;
+
+            // Fetch detailed booking data for this business
+            $query = $conn->prepare("SELECT id, CONCAT(first_name, ' ', last_name) AS customer_name, status, arrival_date FROM bookings WHERE business_id = ? AND MONTH(arrival_date) = ? AND YEAR(arrival_date) = ? ORDER BY arrival_date DESC");
+            $query->bind_param("iii", $business_id, $selected_month, $selected_year);
+            $query->execute();
+            $result = $query->get_result();
+
+            // Process the results first
+            $bookings = [];
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $totalBookings++;
+
+                    // Count bookings based on status
+                    switch (strtolower($row['status'])) {
+                        case 'pending':
+                            $pendingBookings++;
+                            break;
+                        case 'accepted':
+                            $confirmedBookings++;
+                            break;
+                        case 'cancelled':
+                        case 'canceled': // Handling both spelling variations
+                            $cancelledBookings++;
+                            break;
+                    }
+
+                    $bookings[] = $row; // Store row data for later use
+                }
+            }
+
+            $query->close();
+
+            ?>
             <section class="cards">
-                <?php
-                // Fetch booking summary data for this business
-                $summary = [
-                    "total" => 0,
-                    "pending" => 0,
-                    "confirmed" => 0,
-                    "canceled" => 0,
-                ];
-
-                $query = $conn->prepare("SELECT 
-                                             COUNT(*) AS total,
-                                             SUM(status = 'Pending') AS pending,
-                                             SUM(status = 'Accepted') AS confirmed,
-                                             SUM(status = 'Cancelled') AS canceled
-                                         FROM bookings WHERE business_id = ?");
-                $query->bind_param("i", $business_id);
-                $query->execute();
-                $result = $query->get_result();
-
-                if ($result && $row = $result->fetch_assoc()) {
-                    $summary["total"] = $row["total"] ?? 0;
-                    $summary["pending"] = $row["pending"] ?? 0;
-                    $summary["confirmed"] = $row["confirmed"] ?? 0;
-                    $summary["canceled"] = $row["canceled"] ?? 0;
-                } else {
-                    // Set defaults if no result
-                    $summary = [
-                        "total" => 0,
-                        "pending" => 0,
-                        "confirmed" => 0,
-                        "canceled" => 0
-                    ];
-                }
-                $query->close();
-
-                $cardData = [
-                    ["title" => "Total Bookings", "value" => $summary["total"]],
-                    ["title" => "Pending Bookings", "value" => $summary["pending"]],
-                    ["title" => "Confirmed Bookings", "value" => $summary["confirmed"]],
-                    ["title" => "Canceled Bookings", "value" => $summary["canceled"]],
-                ];
-
-                // Render cards dynamically
-                foreach ($cardData as $item) {
-                    echo "<div class='card'>
-                            <h3>" . htmlspecialchars($item['title']) . "</h3>
-                            <p>" . htmlspecialchars($item['value']) . "</p>
-                          </div>";
-                }
-                ?>
+                <div class="card">
+                    <h3>Total Bookings</h3>
+                    <p><?php echo $totalBookings; ?></p>
+                </div>
+                <div class="card">
+                    <h3>Pending</h3>
+                    <p><?php echo $pendingBookings; ?></p>
+                </div>
+                <div class="card">
+                    <h3>Accepted</h3>
+                    <p><?php echo $confirmedBookings; ?></p>
+                </div>
+                <div class="card">
+                    <h3>Cancelled</h3>
+                    <p><?php echo $cancelledBookings; ?></p>
+                </div>
             </section>
 
-            <!-- Detailed Reports Section -->
             <section class="data-table">
                 <h2>Detailed Booking Report</h2>
+
                 <table>
                     <thead>
                         <tr>
@@ -168,32 +221,25 @@ if (!$business_id) {
                     </thead>
                     <tbody>
                         <?php
-                        // Fetch detailed booking data for this business
-                        $detailedQuery = $conn->prepare("SELECT id, CONCAT(first_name, ' ', last_name) AS customer_name, status, arrival_date 
-                                                         FROM bookings WHERE business_id = ? ORDER BY arrival_date DESC");
-                        $detailedQuery->bind_param("i", $business_id);
-                        $detailedQuery->execute();
-                        $detailedResult = $detailedQuery->get_result();
-
-                        if ($detailedResult->num_rows > 0) {
-                            while ($row = $detailedResult->fetch_assoc()) {
+                        if (!empty($bookings)) {
+                            foreach ($bookings as $row) {
                                 echo "<tr>
-                                        <td>B" . htmlspecialchars($row['id']) . "</td>
-                                        <td>" . htmlspecialchars($row['customer_name']) . "</td>
-                                        <td>" . htmlspecialchars($row['status']) . "</td>
-                                        <td>" . date("d M Y", strtotime($row['arrival_date'])) . "</td>
-                                      </tr>";
+                            <td>B" . htmlspecialchars($row['id']) . "</td>
+                            <td>" . htmlspecialchars($row['customer_name']) . "</td>
+                            <td>" . htmlspecialchars($row['status']) . "</td>
+                            <td>" . date("d M Y", strtotime($row['arrival_date'])) . "</td>
+                          </tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='4'>No bookings found for this business.</td></tr>";
+                            echo "<tr><td colspan='4'>No bookings found for the selected period.</td></tr>";
                         }
 
-                        $detailedQuery->close();
-                        $conn->close(); // Close database connection
+                        $conn->close();
                         ?>
                     </tbody>
                 </table>
             </section>
+
         </main>
     </div>
 </body>
