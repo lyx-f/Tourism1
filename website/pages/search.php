@@ -36,7 +36,7 @@
     </div>
     <div class="category">
         <i class="fas fa-utensils"></i>
-        <p>Food</p>
+        <p>Restaurants</p>
     </div>
 </div>
 </div>
@@ -77,20 +77,30 @@ function showLocations(category) {
 
     allLocations.forEach(location => {
         if (category === 'all' || location.category === category) {
-            L.marker([location.latitude, location.longitude])
+            let tooltipContent = `
+                <b>${location.name}</b><br>
+                Price Range: ${location.price_range || 'N/A'}<br>
+                ⭐ ${location.star_review || 'No Reviews'}
+            `;
+
+            let marker = L.marker([location.latitude, location.longitude])
                 .addTo(map)
-                .bindPopup(location.name);
+                .bindTooltip(tooltipContent, { 
+                    permanent: false, 
+                    direction: "top", 
+                    className: "custom-tooltip"
+                });
+
+            // Redirect on click
+            marker.on('click', function() {
+                window.location.href = `des_info.php?id=${location.id}`;
+            });
         }
     });
 }
 
-// Event listeners for categories
-document.querySelectorAll('.category').forEach(categoryElement => {
-    categoryElement.addEventListener('click', function() {
-        const category = this.querySelector('p').textContent.toLowerCase(); // Get category from clicked element
-        showLocations(category);
-    });
-});
+
+
 
 </script>
 
