@@ -30,53 +30,63 @@ if ($result->num_rows > 0) {
     <link rel="stylesheet" href="../../assets/css/homepage.css">
     <link rel="stylesheet" href="../../assets/css/information.css">
     <link rel="stylesheet" href="../../assets/css/footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 <body>
 <div class="holder">
 
     <div class="image-section">
-    <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/1.jpg'; ?>"
+    <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/'; ?>"
     alt="destination_image">
     </div>
     
-    <div class="details">
-        <h1><?= htmlspecialchars($destination['name']); ?></h1>
-        <p><?= htmlspecialchars($destination['description']); ?></p>
-        <p><?= htmlspecialchars($destination['location']); ?></p>
-        <p><?= htmlspecialchars($destination['phone']); ?></p>
+<div class="details">
+    <h1><?= htmlspecialchars($destination['name']); ?></h1>
+    <p><span class="icon-circle"><i class="fa-solid fa-align-left"></i></span> <?= htmlspecialchars($destination['description']); ?></p>
+    <p><span class="icon-circle"><i class="fa-solid fa-location-dot"></i></span> <?= htmlspecialchars($destination['location']); ?></p>
+    <p><span class="icon-circle"><i class="fa-solid fa-phone"></i></span> <?= htmlspecialchars($destination['phone']); ?></p>
+
 
     </div>
 
     <div class="reservation-feedback-container">
         <div class="reservation">
-            <p>₱<?= htmlspecialchars($destination['price']); ?> <span>night</span></p>
-            
-            <div class="dates">
-                <input type="date" id="checkin" placeholder="Check-in">
-                <input type="date" id="checkout" placeholder="Check-out">
-            </div>
-            
-            <div class="guests">
-                <select>
-                    <option value="1">1 guest</option>
-                    <option value="2">2 guests</option>
-                    <option value="3">3 guests</option>
-                </select>
-            </div>
+
+<?php if (!empty($destination['amenities'])): ?>
+   <h3>What this place offers</h3>
+<ul>
+    <?php 
+    $amenitiesList = explode(',', $destination['amenities']);
+    $amenityIcons = [
+        'WiFi' => 'fas fa-wifi',
+        'Parking' => 'fas fa-car',
+        'Pool' => 'fas fa-swimming-pool',
+        'Restaurant' => 'fas fa-utensils',
+        'Gym' => 'fas fa-dumbbell',
+        'Bar' => 'fas fa-cocktail',
+        'Pet Friendly' => 'fas fa-paw'
+    ];
+
+    foreach ($amenitiesList as $amenity):
+        $trimmedAmenity = trim($amenity);
+        $iconClass = isset($amenityIcons[$trimmedAmenity]) ? $amenityIcons[$trimmedAmenity] : 'fas fa-check';
+    ?>
+        <li><i class="<?= $iconClass; ?>"></i> <?= htmlspecialchars($trimmedAmenity); ?></li>
+    <?php endforeach; ?>
+</ul>
+<?php else: ?>
+    <p>No amenities listed.</p>
+<?php endif; ?>
+    <p>Reservations Only! Secure your spot now</p>
+
             
             <a href="booking.php?business_id=<?= $destination['id']; ?>">
                 <button class="reserve-button">Reserve</button>
             </a>
-            
-            <p class="notice">You won't be charged yet</p>
-            
-            <div class="breakdown">
-                <p>₱<?= htmlspecialchars($destination['price']); ?> x 1 nights <span>₱<?= htmlspecialchars($destination['price'] * 0); ?></span></p>
-                <p>Cleaning fee <span>₱0</span></p>
-                <p>Service fee <span>₱0</span></p>
-                <p class="total">Total before taxes <span>₱<?= htmlspecialchars($destination['price'] * 0 + 0 + 0); ?></span></p>
-            </div>
-        </div>
+                </div>
+    
+
 
         <div class="feedback-section">
             <h2>Feedback & Reviews</h2>
