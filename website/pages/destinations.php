@@ -26,27 +26,50 @@ if ($result->num_rows > 0) {
 </head>
 
 <body>
-    <div class="card-grid">
-        <?php if (!empty($destinations)): ?>
-            <?php foreach ($destinations as $destination): ?>
-                <div class="card" onclick="window.location.href='des_info.php?id=<?= $destination['id']; ?>'">
-                    <div class="card-header">
+<div class="grid-container">
+    <a href="events.php" class="card">
+        <img src="../../assets/img/events" alt="Events">
+        <div class="card-content">
+            <i class="far fa-calendar"></i>
+            <p>EVENTS</p>
+        </div>
+    </a>
 
-                        <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/1.jpg'; ?>"
-                            alt="destination_image">
-                        <div class="badge">Guest favorite</div>
-                    </div>
-                    <div class="card-body">
-                        <h3><?= htmlspecialchars($destination['name']); ?></h3>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>No destinations available at the moment.</p>
-        <?php endif; ?>
-    </div>
+    <a href="attractions.php" class="card">
+        <img src="../../assets/img/attractions" alt="Attractions">
+        <div class="card-content">
+            <i class="fas fa-camera"></i>
+            <p>ATTRACTIONS</p>
+        </div>
+    </a>
 
-    <?php include("../../includes/footer.php"); ?>
+    <a href="restaurants.php" class="card">
+        <img src="../../assets/img/restaurants" alt="Restaurants">
+        <div class="card-content">
+            <i class="fas fa-utensils"></i>
+            <p>RESTAURANTS</p>
+        </div>
+    </a>
+
+    <a href="accommodations.php" class="card">
+        <img src="../../assets/img/accommodation.webp" alt="Accommodations">
+        <div class="card-content">
+            <i class="fas fa-home"></i>
+            <p>ACCOMMODATIONS</p>
+        </div>
+    </a>
+
+    <a href="see-more.php" class="card">
+        <img src="../../assets/img/lovemati" alt="See More">
+        <div class="card-content">
+            <i class="fas fa-search-location"></i>
+            <p>SEE MORE</p>
+        </div>
+    </a>
+</div>
+
+
 </body>
+    <?php include("../../includes/footer.php"); ?>
 
 </html>
