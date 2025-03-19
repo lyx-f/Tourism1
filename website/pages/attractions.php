@@ -1,6 +1,6 @@
 <?php
 include("../../includes/homepage_navbar.php");
-include('../../config/database.php'); // Include database connection
+include('../../config/database.php'); 
 
 // Fetch only attractions from the 'businesses' table
 $query = "SELECT id, name, image_url, status FROM businesses WHERE category = 'Attractions'";
