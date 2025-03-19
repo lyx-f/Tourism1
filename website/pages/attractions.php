@@ -6,7 +6,6 @@ include('../../config/database.php');
 $query = "SELECT id, name, image_url, status FROM businesses WHERE category = 'Attractions'";
 $result = $conn->query($query);
 
-// Check if the query returned results
 $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
 ?>
 
