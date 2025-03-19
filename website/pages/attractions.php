@@ -1,6 +1,6 @@
 <?php
 include("../../includes/homepage_navbar.php");
-include('../../config/database.php'); 
+include('../../config/database.php'); // Include database connection
 
 <<<<<<< HEAD
 // Ensure database connection works
@@ -20,8 +20,6 @@ if (!empty($subcategory)) {
     $query .= " AND subcategory = ?";
     $params[] = $subcategory;
 }
-
-//JHJHJHJJHJH
 
 $stmt = $conn->prepare($query);
 
@@ -50,6 +48,7 @@ foreach ($businesses as $business) {
 $query = "SELECT id, name, image_url, status FROM businesses WHERE category = 'Attractions'";
 $result = $conn->query($query);
 
+// Check if the query returned results
 $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
 >>>>>>> de8dda576a272fee8719ae043331cb2d5832bc71
 ?>

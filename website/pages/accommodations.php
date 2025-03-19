@@ -60,7 +60,7 @@ $accommodations = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
     </div>
 </div>
 
-<?php include("../../includes/footer.php"); ?> 
+<?php include("../../includes/footer.php"); ?> <!-- Footer -->
 
 </body>
 </html>
