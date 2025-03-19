@@ -21,6 +21,8 @@ if (!empty($subcategory)) {
     $params[] = $subcategory;
 }
 
+//JHJHJHJJHJH
+
 $stmt = $conn->prepare($query);
 
 // Fix bind_param() for dynamic parameter count
