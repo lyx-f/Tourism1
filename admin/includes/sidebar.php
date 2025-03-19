@@ -51,10 +51,19 @@
         </li> -->
 
 
-
-
         <li class="nav-item mt-3">
-          <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">VERIFICATION</h6>
+          <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">BUSINESS MANAGEMENT</h6>
+    
+            <li class="nav-item">
+          <a class="nav-link  " href="accredited_lists.php">
+            <div
+              class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fas fa-list text-dark text-lg"></i>
+            </div>
+            <span class="nav-link-text ms-1">Accredited Businesses</span>
+          </a>
+        </li> 
+     
         <li class="nav-item">
           <a class="nav-link  " href="verification.php">
             <div
@@ -82,7 +91,7 @@
               class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
               <i class="fas fa-comments text-dark text-lg"></i>
             </div>
-            <span class="nav-link-text ms-1">Chat Support</span>
+            <span class="nav-link-text ms-1">Contact Us</span>
           </a>
         </li>
 

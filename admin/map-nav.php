@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 include '../config/database.php';
 
 $query = "SELECT id, name, latitude, longitude, status FROM locations";  // Modify as needed

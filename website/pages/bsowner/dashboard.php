@@ -82,6 +82,8 @@ if ($is_business_owner) {
             <ul>
                 <li><a href="dashboard.php" class="active">Overview</a></li>
                 <li><a href="reports.php">Reports</a></li>
+                <li><a href="feedbacks.php">Feedbacks</a></li>
+                <li><a href="feedbacks.php">Messages</a></li>
                 <li><a href="edit-business.php?business_id=<?php echo $business_id; ?>">Edit Information</a></li>
                 <li><a href="../logout.php">Logout</a></li>
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for popup -->
