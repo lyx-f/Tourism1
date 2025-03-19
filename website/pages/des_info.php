@@ -35,11 +35,42 @@ if ($result->num_rows > 0) {
 </head>
 <body>
 <div class="holder">
+<div class="image-gallery">
+    <?php 
+    // Fetch and clean image URLs
+    $mainImage = isset($destination['main_image']) ? trim($destination['main_image']) : ''; // Fetch main image
+    $imageUrls = isset($destination['image_url']) ? trim($destination['image_url']) : ''; // Fetch gallery images
+    
+    // Remove leading comma from `image_url`
+    $imageUrls = ltrim($imageUrls, ',');
+    
+    $images = array_filter(array_map('trim', explode(',', $imageUrls))); 
+    $images = array_values($images); // Reset array index
 
-    <div class="image-section">
-    <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/'; ?>"
-    alt="destination_image">
+    // Set correct file paths
+    $mainImagePath = "../../assets/img/" . $mainImage;
+
+    // Check if the main image exists before displaying
+    if (!empty($mainImage) && file_exists($mainImagePath)): 
+    ?>
+        <div class="image-main">
+            <img src="<?= htmlspecialchars($mainImagePath) ?>" alt="Main Image">
+        </div>
+    <?php else: ?>
+        <p style="color: red;">No main image available (Check path: <?= $mainImagePath ?>)</p>
+    <?php endif; ?>
+
+    <div class="image-grid">
+        <?php 
+        foreach ($images as $galleryImage):
+            $galleryImagePath = "../../assets/img/" . $galleryImage;
+        ?>
+            <img src="<?= htmlspecialchars($galleryImagePath) ?>" alt="Gallery Image">
+        <?php endforeach; ?>
     </div>
+</div>
+
+
     
 <div class="details">
     <h1><?= htmlspecialchars($destination['name']); ?></h1>
