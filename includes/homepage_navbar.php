@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["search-data"]) && !em
         </a>
         <nav>
             <a href="homepage.php">Home</a>
-            <a href="destinations.php">Destination</a>
+            <a href="destinations.php">Mati Experience</a>
             <a href="../pages/contact.php">Contact Us</a>
         </nav>
 
