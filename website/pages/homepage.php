@@ -1,7 +1,7 @@
 <?php include('../../includes/homepage_navbar.php');
 include('../../config/database.php');
 // Fetch top 3 businesses with the highest rating
-$query = "SELECT b.id, b.name, b.description, b.image_url, AVG(f.rating) AS average_rating
+$query = "SELECT b.id, b.name, b.description, b.image_url,b.main_image, AVG(f.rating) AS average_rating
 FROM businesses b
 LEFT JOIN feedbacks f ON b.id = f.destination_id
 GROUP BY b.id, b.name
@@ -45,11 +45,13 @@ if ($result) {
 
         <div class="destination-container">
             <?php if (!empty($destinations)): ?>
-                <?php foreach ($destinations as $destination): ?>
+                <?php foreach ($destinations as $destination):
+?>
                     <div class="card">
-                        <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/1.jpg'; ?>"
+                        
+                        <img src="<?= isset($destination['main_image']) && !empty($destination['main_image']) ? "../../assets/img/" . $destination['main_image'] : '../../assets/img/'; ?>"
                             alt="destination_image">
-
+                        
                         <h3><?= htmlspecialchars($destination['name']); ?></h3>
                         <p><?= htmlspecialchars($destination['description']); ?></p>
                         <a href="des_info.php?id=<?= $destination['id']; ?>">Read More</a>
