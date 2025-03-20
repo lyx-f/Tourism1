@@ -1,7 +1,7 @@
 <?php include('../../includes/homepage_navbar.php');
 include('../../config/database.php');
 // Fetch top 3 businesses with the highest rating
-$query = "SELECT b.id, b.name, b.description, b.image_url, AVG(f.rating) AS average_rating
+$query = "SELECT b.id, b.name, b.description, b.image_url,b.main_image, AVG(f.rating) AS average_rating
 FROM businesses b
 LEFT JOIN feedbacks f ON b.id = f.destination_id
 GROUP BY b.id, b.name

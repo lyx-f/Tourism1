@@ -93,7 +93,7 @@ function showLocations(category) {
 
             // Redirect on click
             marker.on('click', function() {
-                window.location.href = `des_info.php?id=${location.id}`; // Modify based on your actual URL structure
+                window.location.href = `des_info.php?id=${location.id}`;
             });
         }
     });

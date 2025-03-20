@@ -20,8 +20,8 @@ if (!isset($_GET['business_id']) || !is_numeric($_GET['business_id'])) {
 
 $business_id = intval($_GET['business_id']);
 
-// Fetch the specific business data for the logged-in user
-$sql = "SELECT id, name, description, location, price, image_url, amenities 
+// Fetch the business data for the logged-in user
+$sql = "SELECT id, name, description, location, price, main_image, image_url, amenities 
         FROM businesses 
         WHERE id = ? AND user_id = ?";
 $stmt = $conn->prepare($sql);
@@ -39,7 +39,9 @@ if ($row = $result->fetch_assoc()) {
     $description = $row['description'];
     $location = $row['location'];
     $price = $row['price'];
-    $imagePath = $row['image_url'];
+    $mainImage = !empty($row['main_image']) ? trim($row['main_image']) : ''; // Fetch main image
+    $imagePath = !empty($row['image_url']) ? trim($row['image_url']) : ''; // Fetch additional images
+    $otherImages = !empty($imagePath) ? explode(',', $imagePath) : []; // Convert to array
     $amenities = $row['amenities']; // Fetch amenities from DB
 } else {
     die("No business data found for the provided ID or insufficient permissions.");
@@ -51,15 +53,13 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Business</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for popup -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- SweetAlert2 for popups -->
 </head>
-
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
@@ -69,6 +69,7 @@ $conn->close();
                 <li><a href="dashboard.php">Overview</a></li>
                 <li><a href="reports.php">Reports</a></li>
                 <li><a href="feedbacks.php">Feedbacks</a></li>
+                <li><a href="messages.php">Messages</a></li>
                 <li><a href="edit-business.php?business_id=<?php echo $business_id; ?>" class="active">Edit Business</a></li>
                 <li><a href="../logout.php">Logout</a></li>
             </ul>
@@ -94,8 +95,7 @@ $conn->close();
             <?php endif; ?>
 
             <!-- Edit Business Form -->
-            <form action="process-edit-business.php?business_id=<?php echo $business_id; ?>" method="POST"
-                enctype="multipart/form-data">
+            <form action="process-edit-business.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="business_id" value="<?php echo $business_id; ?>">
 
                 <!-- Business Name -->
@@ -108,17 +108,6 @@ $conn->close();
                 <textarea id="description" name="description" rows="5" placeholder="Enter business description"
                     required><?php echo htmlspecialchars($description); ?></textarea>
 
-                <!-- Business Image -->
-                <label for="image">Business Image:</label>
-                <input type="file" id="image" name="image" accept="image/*">
-                <?php if (!empty($imagePath)): ?>
-                    <div>
-                        <p>Current Image:</p>
-                        <img src="<?= "../../../assets/img/" . $imagePath ?>" alt="destination_image"
-                            style="max-width: 200px; object-fit: ;">
-                    </div>
-                <?php endif; ?>
-
                 <!-- Business Location -->
                 <label for="location">Location:</label>
                 <input type="text" id="location" name="location" placeholder="Enter business location"
@@ -129,6 +118,34 @@ $conn->close();
                 <input type="text" id="amenities" name="amenities" placeholder="WiFi, Parking, Pool, etc."
                     value="<?php echo htmlspecialchars($amenities); ?>">
                 <p><small>Separate amenities with commas (,)</small></p>
+
+                <!-- Business Images -->
+                <label for="main_image">Main Business Image:</label>
+                <input type="file" id="main_image" name="main_image" accept="image/*">
+
+                <!-- Display Existing Main Image -->
+                <?php if (!empty($mainImage)): ?>
+                    <p>Current Main Image:</p>
+                    <img src="<?= "../../../assets/img/" . htmlspecialchars($mainImage) ?>" 
+                         style="max-width: 300px; object-fit: cover; margin: 5px; border: 2px solid #00796b;">
+                <?php endif; ?>
+
+                <label for="images">Additional Business Images:</label>
+                <input type="file" id="image1" name="images[]" accept="image/*">
+                <input type="file" id="image2" name="images[]" accept="image/*">
+                <input type="file" id="image3" name="images[]" accept="image/*">
+                <input type="file" id="image4" name="images[]" accept="image/*">
+
+                <!-- Display Existing Additional Images -->
+                <?php if (!empty($otherImages)): ?>
+                    <p>Current Additional Images:</p>
+                    <div>
+                        <?php foreach ($otherImages as $image): ?>
+                            <img src="<?= "../../../assets/img/" . htmlspecialchars(trim($image)) ?>" 
+                                 style="max-width: 150px; object-fit: cover; margin: 5px;">
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Submit Button -->
                 <button type="submit">Save Changes</button>

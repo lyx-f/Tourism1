@@ -2,7 +2,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
-
+ 
 <div class="sidebar">
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 "
     id="sidenav-main">
@@ -51,10 +51,19 @@
         </li> -->
 
 
-
-
         <li class="nav-item mt-3">
-          <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">VERIFICATION</h6>
+          <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">BUSINESS MANAGEMENT</h6>
+    
+            <li class="nav-item">
+          <a class="nav-link  " href="accredited_lists.php">
+            <div
+              class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+              <i class="fas fa-list text-dark text-lg"></i>
+            </div>
+            <span class="nav-link-text ms-1">Accredited Businesses</span>
+          </a>
+        </li> 
+     
         <li class="nav-item">
           <a class="nav-link  " href="verification.php">
             <div

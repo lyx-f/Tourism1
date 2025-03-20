@@ -136,6 +136,7 @@ if (!$business_id) {
                 <li><a href="dashboard.php">Overview</a></li>
                 <li><a href="reports.php" class="active">Reports</a></li>
                 <li><a href="feedbacks.php">Feedbacks</a></li>
+                <li><a href="feedbacks.php">Messages</a></li>
                 <li><a href="edit-business.php?business_id=<?php echo $business_id; ?>">Edit Information</a></li>
                 <li><a href="../logout.php">Logout</a></li>
             </ul>
