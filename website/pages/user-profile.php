@@ -285,7 +285,7 @@ include("../../includes/homepage_navbar.php");
 <body>
     <div class="profile-container">
         <div class="profile">
-            <i class="fas fa-user-circle fa-4x profile-icon"></i> 
+            <i class="fas fa-user-circle fa-4x profile-icon"></i>
             <h2><?= $_SESSION['username'] ?></h2>
             <button class="toggle-btn" id="openForm">+</button>
         </div>
@@ -313,7 +313,24 @@ include("../../includes/homepage_navbar.php");
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h4>Booking Information</h4>
-            <p>Details about booking will be shown here...</p>
+            <div id="bookingDetails">
+                <!-- Fetched booking details will be inserted here -->
+            </div>
+        </div>
+    </div>
+    <!-- Chat Modal -->
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-header">
+            <h4>Chat Support</h4>
+            <span class="chat-close">&times;</span>
+        </div>
+        <div class="chat-body">
+            <p><strong>Chatting with:</strong> <span id="chatBookingName"></span></p>
+            <div id="messages" class="chat-messages">
+
+            </div>
+            <textarea id="chatInput" placeholder="Type a message..."></textarea>
+            <button id="sendChatBtn">Send</button>
         </div>
     </div>
 
@@ -326,25 +343,28 @@ include("../../includes/homepage_navbar.php");
                 <div class="form-row">
                     <div class="form-group">
                         <label for="owner_username">Username:</label>
-                        <input type="text" id="owner_username" name="owner_username" placeholder="Enter your username" required>
+                        <input type="text" id="owner_username" name="owner_username" placeholder="Enter your username"
+                            required>
                     </div>
                     <div class="form-group">
                         <label for="owner_password">Password:</label>
-                        <input type="password" id="owner_password" name="owner_password" placeholder="Enter password" required>
+                        <input type="password" id="owner_password" name="owner_password" placeholder="Enter password"
+                            required>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name">First Name:</label>
-                        <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" required>
+                        <input type="text" id="first_name" name="first_name" placeholder="Enter your first name"
+                            required>
                     </div>
                     <div class="form-group">
                         <label for="last_name">Last Name:</label>
                         <input type="text" id="last_name" name="last_name" placeholder="Enter your last name" required>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="email">Email:</label>
@@ -355,23 +375,25 @@ include("../../includes/homepage_navbar.php");
                         <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
                     </div>
                 </div>
-                
+
                 <h4>Business Information</h4>
                 <label for="destinationName">Business Name:</label>
-                <input type="text" id="destinationName" name="destinationName" placeholder="Enter business name" required>
-                
+                <input type="text" id="destinationName" name="destinationName" placeholder="Enter business name"
+                    required>
+
                 <h4>Business Address</h4>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="street">Street Address:</label>
-                        <input type="text" id="street" name="street" placeholder="House No. / Building Name & Street Name" required>
+                        <input type="text" id="street" name="street"
+                            placeholder="House No. / Building Name & Street Name" required>
                     </div>
                     <div class="form-group">
                         <label for="barangay">Barangay (if applicable):</label>
                         <input type="text" id="barangay" name="barangay" placeholder="Enter barangay (optional)">
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="city">City / Municipality:</label>
@@ -382,7 +404,7 @@ include("../../includes/homepage_navbar.php");
                         <input type="text" id="province" name="province" placeholder="Enter province or state" required>
                     </div>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="zip">ZIP Code:</label>
@@ -393,12 +415,12 @@ include("../../includes/homepage_navbar.php");
                         <input type="text" id="country" name="country" placeholder="Enter country" required>
                     </div>
                 </div>
-                
+
                 <div class="form-group full-width">
                     <label for="description">Description:</label>
                     <textarea id="description" name="description" placeholder="Enter description" required></textarea>
                 </div>
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="room_type">Category:</label>
@@ -415,7 +437,7 @@ include("../../includes/homepage_navbar.php");
                         <input type="file" id="image" name="image" accept="image/*" required>
                     </div>
                 </div>
-                
+
                 <input type="hidden" name="role" value="user">
                 <button type="submit" class="submit-btn">Submit for Verification</button>
             </form>
@@ -424,14 +446,179 @@ include("../../includes/homepage_navbar.php");
 
     <script src="../../assets/js/add-location.js"></script>
     <script>
-           document.addEventListener("DOMContentLoaded", function () {
-            const modal = document.getElementById("businessFormModal");
-            const openFormBtn = document.getElementById("openForm");
-            const closeBtn = document.querySelector(".close-btn");
-            openFormBtn.addEventListener("click", () => modal.style.display = "flex");
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.getElementById("bookingInfoModal");
+            const openModalBtn = document.getElementById("bookingInfoBtn");
+            const closeBtn = modal.querySelector(".close-btn");
+            const bookingDetails = document.getElementById("bookingDetails");
+
+            const chatModal = document.getElementById("chatModal");
+            const chatClose = document.querySelector(".chat-close");
+            const chatBookingName = document.getElementById("chatBookingName");
+            const messagesContainer = document.getElementById("messages");
+            const chatInput = document.getElementById("chatInput");
+            const sendChatBtn = document.getElementById("sendChatBtn");
+
+            let currentBusinessId = null;
+            let fetchMessagesInterval = null;
+
+            // Fetch bookings and populate the modal
+            async function fetchBookings() {
+                try {
+                    const response = await fetch(window.location.href + "?fetchBookings=true");
+                    if (!response.ok) throw new Error("Failed to fetch bookings");
+
+                    const bookings = await response.json();
+                    if (bookings.error) throw new Error(bookings.error);
+
+                    if (bookings.length === 0) {
+                        bookingDetails.innerHTML = "<p>No bookings found.</p>";
+                        return;
+                    }
+
+                    bookingDetails.innerHTML = bookings.map(booking => `
+                <div class="booking-item modal-cards">
+                    <p><strong>Destination:</strong> ${booking.name}</p>
+                    <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
+                    <p><strong>Location:</strong> ${booking.location}</p>
+                    <p><strong>Category:</strong> ${booking.category}</p>
+                    <button class="chat-now-btn" data-business-id="${booking.business_id}" data-booking-name="${booking.name}">Chat Now</button>
+                </div>
+            `).join("");
+
+                    attachChatEventListeners();
+                } catch (error) {
+                    bookingDetails.innerHTML = `<p>Error loading bookings.</p>`;
+                    console.error(error);
+                }
+            }
+
+            // Attach event listeners to "Chat Now" buttons
+            function attachChatEventListeners() {
+                document.querySelectorAll(".chat-now-btn").forEach(button => {
+                    button.addEventListener("click", function () {
+                        currentBusinessId = this.getAttribute("data-business-id");
+                        chatBookingName.textContent = this.getAttribute("data-booking-name");
+                        chatModal.style.display = "block";
+                        fetchMessages(); // Load messages when chat opens
+                        startFetchingMessages();
+                    });
+                });
+            }
+           
+            let currentConversationId = null
+            // Fetch messages from the server
+            async function fetchMessages() {
+                if (!currentBusinessId) return;
+
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set("business-id", currentBusinessId);
+                    url.searchParams.set("fetchMessages", "true");
+
+                    const response = await fetch(url.toString(), {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    });
+
+                     const text = await response.text(); // Get raw response text
+
+                    try {
+                        const messages = JSON.parse(text);
+
+                        if (messages.length > 0) {
+                            // Store the conversation ID from the first message
+                            currentConversationId = messages[0].conversation_id || null;
+                        }
+
+                        displayMessages(messages);
+                    } catch (jsonError) {
+                        console.error("JSON Parsing Error:", jsonError, "Raw response:", text);
+                    }
+                } catch (error) {
+                    console.error("Error fetching messages:", error);
+                }
+            }
+
+
+            // Display messages in chat modal
+            function displayMessages(messages) {
+                messagesContainer.innerHTML = messages.map(msg => `
+            <div class="message ${msg.message_type}">${msg.message}</div>
+        `).join("");
+                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to latest message
+            }
+
+            // Send message function
+            async function sendMessage() {
+               
+                const message = chatInput.value.trim();
+                if (!message || !currentBusinessId) return;
+                
+                try {
+                    const response = await fetch(window.location.href + "?sendMessage=true", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        body: `conversation_id=${encodeURIComponent(currentConversationId)}&business-id=${encodeURIComponent(currentBusinessId)}&message=${encodeURIComponent(message)}`
+                    });
+
+                    if (!response.ok) throw new Error("Failed to send message");
+
+                    chatInput.value = ""; // Clear input field
+                    fetchMessages(); // Refresh messages after sending
+                } catch (error) {
+                    console.error("Error sending message:", error);
+                }
+            }
+
+            // Start interval to fetch messages every 5 seconds
+            function startFetchingMessages() {
+                if (fetchMessagesInterval) clearInterval(fetchMessagesInterval);
+                fetchMessagesInterval = setInterval(fetchMessages, 5000);
+            }
+
+            // Stop fetching messages
+            function stopFetchingMessages() {
+                if (fetchMessagesInterval) {
+                    clearInterval(fetchMessagesInterval);
+                    fetchMessagesInterval = null;
+                }
+            }
+
+            // Open booking modal
+            if (openModalBtn) {
+                openModalBtn.addEventListener("click", () => {
+                    modal.style.display = "flex";
+                    fetchBookings();
+                });
+            }
+
+            // Close booking modal
             closeBtn.addEventListener("click", () => modal.style.display = "none");
             window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+
+            // Close chat modal
+            chatClose.addEventListener("click", () => {
+                chatModal.style.display = "none";
+                stopFetchingMessages();
+            });
+
+            window.addEventListener("click", (e) => {
+                if (e.target === chatModal) {
+                    chatModal.style.display = "none";
+                    stopFetchingMessages();
+                }
+            });
+
+            // Send message event
+            sendChatBtn.addEventListener("click", sendMessage);
+            chatInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") sendMessage();
+            });
         });
+
+
+
         document.addEventListener("DOMContentLoaded", function () {
             const bookingModal = document.getElementById("bookingInfoModal");
             const bookingBtn = document.getElementById("bookingInfoBtn");
