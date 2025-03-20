@@ -33,62 +33,42 @@ if ($result) {
 
 </head>
 
-<body>
+<body class="homepage">
+    <div class="main-content">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Explore</h1>
+                <span class="outlined-text">Destinations</span>
+                <p>Kadi kamo!</p>
+            </div>
 
-    <div class="hero-container">
-        <div class="hero-content">
-            <h1>Explore</h1>
-            <span class="outlined-text">Destinations</span>
-            <p>Experience it now!</p>
+            <div class="destination-container">
+                <?php if (!empty($destinations)): ?>
+                    <?php foreach ($destinations as $destination): ?>
+                        <div class="card">
+                            <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/'; ?>"
+                                alt="destination_image">
+
+                            <h3><?= htmlspecialchars($destination['name']); ?></h3>
+                            <p><?= htmlspecialchars($destination['description']); ?></p>
+                            <a href="des_info.php?id=<?= $destination['id']; ?>">Read More</a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>No destinations available at the moment.</p>
+                <?php endif; ?>
+            </div>
         </div>
-        </section>
 
-        <div class="destination-container">
-            <?php if (!empty($destinations)): ?>
-                <?php foreach ($destinations as $destination): ?>
-                    <div class="card">
-                        <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/1.jpg'; ?>"
-                            alt="destination_image">
-
-                        <h3><?= htmlspecialchars($destination['name']); ?></h3>
-                        <p><?= htmlspecialchars($destination['description']); ?></p>
-                        <a href="des_info.php?id=<?= $destination['id']; ?>">Read More</a>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>No destinations available at the moment.</p>
-            <?php endif; ?>
-            <!-- <div class="card">
-                <img src="../../assets/img/1.jpg" alt="fiksur ni">
-                <h3>Blue Bless Beach Resort</h3>
-                <p>A serene beachfront escape perfect for relaxation and enjoying the sun.</p>
-                <a href="#">Read More</a>
-            </div>
-            <div class="card">
-                <img src="../../assets/img/2.jpg" alt="fiksur ni">
-                <h3>Masao Beach Resort</h3>
-                <p>A picturesque resort with stunning waterfront cottages and a fine white-sand beach.</p>
-                <a href="#">Read More</a>
-            </div>
-            <div class="card">
-                <img src="../../assets/img/5.jpg" alt="fiksur ni">
-                <h3>Oriental Reef Beach Resort</h3>
-                <p>A charming resort with beautiful coastal views and a tranquil setting.</p>
-                <a href="#">Read More</a>
-            </div> -->
+        <div class="map-button-container">
+            <a href="search.php" target="_blank" class="map-button">
+                <i class="fas fa-map"></i> Mati Map
+            </a>
         </div>
     </div>
-
-
-    <div class="map-button-container">
-        <a href="search.php" target="_blank" class="map-button">
-            <i class="fas fa-map"></i> Open Maps
-        </a>
-    </div>
-
 
     <?php include('../../includes/footer.php'); ?>
+</body>
 
-    </bodyc>
 
 </html>

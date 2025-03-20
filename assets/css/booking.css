@@ -1,56 +1,101 @@
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        .booking-form {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: rgba(0, 109, 109, 0.6);
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .booking-form h2 {
-            margin-bottom: 20px;
-            text-align: center;
-            color: #fff;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .form-group input[type="date"] {
-            padding: 9px;
-        }
-        .form-group input:focus,
-        .form-group select:focus {
-            background-color: rgba(1, 54, 54, 0.729);
-            outline: none;
-        }
-        .btn-submit {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: rgba(1, 54, 54, 0.729);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .btn-submit:hover {
-            background-color: #00251f;
-        }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.booking-form {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: rgba(0, 109, 109, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.booking-form h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #fff;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px; /* Adds spacing between fields */
+}
+
+.form-row .form-group {
+    flex: 1; /* Ensures both fields take equal width */
+}
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+/* Date and time pickers */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* Fix alignment of selects */
+select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    background-color: rgba(1, 54, 54, 0.729);
+    outline: none;
+}
+
+.btn-submit {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: rgba(1, 54, 54, 0.729);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background-color: #00251f;
+}

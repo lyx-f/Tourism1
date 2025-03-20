@@ -22,6 +22,14 @@
     font-size: 20px;
     margin-bottom: 20px;
 }
+.custom-tooltip {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 14px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
 
 .categories {
     display: flex; /* Change grid to flex for horizontal alignment */

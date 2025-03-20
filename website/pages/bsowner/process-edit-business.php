@@ -23,7 +23,7 @@ $business_id = intval($_POST['business_id']);
 $businessName = $_POST['businessName'];
 $description = $_POST['description'];
 $location = $_POST['location'];
-$price = $_POST['price'];
+$amenities = trim($_POST['amenities']); 
 
 // Handle file upload
 $imagePath = null;
@@ -40,7 +40,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 
 // Update the business data
 $sql = "UPDATE businesses 
-        SET name = ?, description = ?, location = ?, price = ?, image_url = IFNULL(?, image_url) 
+        SET name = ?, description = ?, location = ?, amenities= ?, image_url = IFNULL(?, image_url) 
         WHERE id = ? AND user_id = ?";
 $stmt = $conn->prepare($sql);
 
@@ -48,7 +48,7 @@ if (!$stmt) {
     die("SQL prepare failed: " . $conn->error);
 }
 
-$stmt->bind_param('ssssdii', $businessName, $description, $location, $price, $imagePath, $business_id, $user_id);
+$stmt->bind_param('ssssdii', $businessName, $description, $location, $amenities, $imagePath, $business_id, $user_id);
 
 if ($stmt->execute()) {
     header('Location: edit-business.php?success=1&business_id=' . $business_id);

@@ -1,6 +1,8 @@
-<?php include('includes/header.php'); ?>
 
 <?php
+session_start();
+
+include('includes/header.php');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 

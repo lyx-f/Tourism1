@@ -2,10 +2,14 @@ body {
     font-family: Arial, sans-serif;
     color: #fff;
     line-height: 1.8;
-    background-color: #00292c; /* Background color to match the theme */
+    background-color: #00292c;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensures the footer stays at the bottom */
 }
+
 
 .content {
     max-width: 800px;

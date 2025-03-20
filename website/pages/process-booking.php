@@ -52,11 +52,11 @@ if (isset($_GET['id'], $_GET['action'])) {
     if ($stmt->execute()) {
         // Log the activity
         $current_time = date("Y-m-d H:i:s");
-        $activity_sql = "INSERT INTO activities (booking_id, status, time) VALUES (?, ?, ?)";
+        $activity_sql = "INSERT INTO activities (booking_id, time) VALUES (?, ?, ?)";
         $activity_stmt = $conn->prepare($activity_sql);
 
         if ($activity_stmt) {
-            $activity_stmt->bind_param("iss", $booking_id, $status, $current_time);
+            $activity_stmt->bind_param("iss", $booking_id, $current_time);
             if (!$activity_stmt->execute()) {
                 echo "Status updated, but failed to record activity: " . $activity_stmt->error;
             }
@@ -93,11 +93,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $departureDate = $_POST['departure_date'];
     $arrivalDate = $_POST['arrival_date'];
     $guests = intval($_POST['guests']);
-    $roomType = htmlspecialchars(trim($_POST['room_type']));
     $status = "Pending";
 
     // Validate required fields
-    if (empty($business_id) || empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($departureDate) || empty($arrivalDate) || empty($guests) || empty($roomType)) {
+    if (empty($business_id) || empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($departureDate) || empty($arrivalDate) || empty($guests)) {
         echo "All fields are required!";
         exit();
     }
@@ -115,15 +114,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert the booking into the database
-    $sql = "INSERT INTO bookings (first_name, last_name, email, phone, business_id, status, departure_date, arrival_date, guests, room_type, user_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+    $sql = "INSERT INTO bookings (first_name, last_name, email, phone, business_id, status, departure_date, arrival_date, guests, user_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
     $stmt = $conn->prepare($sql);
 
     if (!$stmt) {
         die("Error preparing statement: " . $conn->error);
     }
 
-    $stmt->bind_param("ssssisssiss", $firstName, $lastName, $email, $phone, $business_id, $status, $departureDate, $arrivalDate, $guests, $roomType, $user_id);
+    $stmt->bind_param("ssssisssiss", $firstName, $lastName, $email, $phone, $business_id, $departureDate, $arrivalDate, $guests, $user_id);
 
     if ($stmt->execute()) {
         // Get the last inserted booking ID

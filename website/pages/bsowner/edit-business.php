@@ -21,7 +21,7 @@ if (!isset($_GET['business_id']) || !is_numeric($_GET['business_id'])) {
 $business_id = intval($_GET['business_id']);
 
 // Fetch the specific business data for the logged-in user
-$sql = "SELECT id, name, description, location, price, image_url 
+$sql = "SELECT id, name, description, location, price, image_url, amenities 
         FROM businesses 
         WHERE id = ? AND user_id = ?";
 $stmt = $conn->prepare($sql);
@@ -40,6 +40,7 @@ if ($row = $result->fetch_assoc()) {
     $location = $row['location'];
     $price = $row['price'];
     $imagePath = $row['image_url'];
+    $amenities = $row['amenities']; // Fetch amenities from DB
 } else {
     die("No business data found for the provided ID or insufficient permissions.");
 }
@@ -47,7 +48,6 @@ if ($row = $result->fetch_assoc()) {
 $stmt->close();
 $conn->close();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -68,8 +68,8 @@ $conn->close();
             <ul>
                 <li><a href="dashboard.php">Overview</a></li>
                 <li><a href="reports.php">Reports</a></li>
-                <li><a href="edit-business.php?business_id=<?php echo $business_id; ?>" class="active">Edit Business</a>
-                </li>
+                <li><a href="feedbacks.php">Feedbacks</a></li>
+                <li><a href="edit-business.php?business_id=<?php echo $business_id; ?>" class="active">Edit Business</a></li>
                 <li><a href="../logout.php">Logout</a></li>
             </ul>
         </nav>
@@ -124,10 +124,11 @@ $conn->close();
                 <input type="text" id="location" name="location" placeholder="Enter business location"
                     value="<?php echo htmlspecialchars($location); ?>" required>
 
-                <!-- Price Per Night -->
-                <label for="price">Price per Night:</label>
-                <input type="number" id="price" name="price" placeholder="Enter price per night"
-                    value="<?php echo htmlspecialchars($price); ?>" min="0" step="0.01" required>
+                <!-- Business Amenities -->
+                <label for="amenities">Amenities:</label>
+                <input type="text" id="amenities" name="amenities" placeholder="WiFi, Parking, Pool, etc."
+                    value="<?php echo htmlspecialchars($amenities); ?>">
+                <p><small>Separate amenities with commas (,)</small></p>
 
                 <!-- Submit Button -->
                 <button type="submit">Save Changes</button>

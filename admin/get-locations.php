@@ -14,6 +14,7 @@ if ($result->num_rows > 0) {
             'latitude' => $row['latitude'],
             'longitude' => $row['longitude'],
             'category' => $row['category'] 
+
         );
     }
 }
