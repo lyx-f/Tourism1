@@ -90,62 +90,6 @@
 }
 
 
-/* Grid Layout for Smaller Images */
-.image-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2x2 grid */
-    grid-template-rows: repeat(2, 1fr);
-    gap: 10px;
-    width: 100%; /* Increased width */
-    height: 100%; /* Make it same height as the main image */
-}
-
-/* Small Image Styling */
-.image-grid img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
-    .image-gallery {
-        grid-template-columns: 1fr; /* Stack images on small screens */
-    }
-    .image-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-
-.details h1,
-.details p {
-    display: flex;
-    align-items: center;
-    gap: 15px; /* Adds space between icon and text */
-}
-
-.icon-circle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: #f0f0f0;
-    border-radius: 50%;
-}
-
-.icon-circle i {
-    font-size: 18px;
-    color: #333;
-}
-
-.text-spacing {
-    flex: 1; /* Ensures text stays properly aligned and spaced */
-}
-
-
 /* Details Section */
 .details {
     margin-bottom: 30px;

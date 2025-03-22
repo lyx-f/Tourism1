@@ -49,7 +49,7 @@ if ($result) {
 ?>
                     <div class="card">
                         
-                        <img src="<?= isset($destination['main_image']) && !empty($destination['main_image']) ? "../../assets/img/" . $destination['main_image'] : '../../assets/img/'; ?>"
+                        <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/'; ?>"
                             alt="destination_image">
                         
                         <h3><?= htmlspecialchars($destination['name']); ?></h3>

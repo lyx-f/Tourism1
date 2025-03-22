@@ -208,6 +208,7 @@ include("../../includes/homepage_navbar.php");
         height: calc(100% - 50px);
         flex: 1;
         display: flex;
+        justify-content:space-between;
         flex-direction: column;
         padding: 10px;
     }
@@ -254,14 +255,19 @@ include("../../includes/homepage_navbar.php");
         flex-direction: column;
     }
 
+    .chat-container{
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+        flex-direction: row;
+    }
     /* Chat Input */
     textarea {
-        width: 100%;
+        margin-top: 0px;
         height: 60px;
-        margin-top: 10px;
-        padding: 5px;
+        height: 40px;
         border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 10px;
         resize: none;
     }
 
@@ -269,12 +275,10 @@ include("../../includes/homepage_navbar.php");
     #sendChatBtn {
         background: rgb(2, 90, 90);
         color: white;
-        padding: 8px;
         border: none;
         cursor: pointer;
-        border-radius: 5px;
-        margin-top: 5px;
-
+        border-radius: 10px;
+        width: 100px;
     }
 
     #sendChatBtn:hover {
@@ -329,8 +333,11 @@ include("../../includes/homepage_navbar.php");
             <div id="messages" class="chat-messages">
 
             </div>
-            <textarea id="chatInput" placeholder="Type a message..."></textarea>
+            <div class="chat-container">
+                <textarea id="chatInput" placeholder="Type a message..."></textarea>
             <button id="sendChatBtn">Send</button>
+            </div>
+            
         </div>
     </div>
 
