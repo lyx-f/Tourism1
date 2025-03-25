@@ -10,114 +10,53 @@ if (!isset($_SESSION['username'])) {
 include "../../config/database.php";
 $userId = $_SESSION["user_id"];
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
+if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["fetchBookings"])) {
 
-    if (isset($_GET["fetchBookings"])) {
-        $sql = "SELECT 
-            b.id AS booking_id, b.arrival_date AS date,
-            biz.id AS business_id, biz.name AS business_name, biz.location, biz.category
-        FROM bookings AS b
-        LEFT JOIN businesses AS biz ON b.business_id = biz.id
-        WHERE b.user_id = ?";
-        $stmt = $conn->prepare($sql);
+    $sql = "SELECT 
+                b.id AS booking_id, 
+                biz.id AS business_id, 
+                biz.name AS business_name, 
+                biz.location, 
+                biz.category,
+                CASE 
+                    WHEN biz.category = 'accommodations' THEN acc.checkin
+                    WHEN biz.category = 'attractions' THEN attr.visit_date
+                    WHEN biz.category = 'restaurants' THEN res.reservation_datetime
+                    ELSE NULL 
+                END AS date
+            FROM bookings AS b
+            LEFT JOIN businesses AS biz ON b.business_id = biz.id
+            LEFT JOIN accommodations_booking_details AS acc ON b.id = acc.booking_id AND biz.category = 'accommodations'
+            LEFT JOIN attractions_booking_details AS attr ON b.id = attr.booking_id AND biz.category = 'attractions'
+            LEFT JOIN restaurants_booking_details AS res ON b.id = res.booking_id AND biz.category = 'restaurants'
+            WHERE b.user_id = ?";
 
-        $stmt->bind_param("s", $userId);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        $data = [];
-        while ($row = $result->fetch_assoc()) {
-            $data[] = [
-                "id" => htmlspecialchars(string: $row["booking_id"]),
-                "business_id" => htmlspecialchars(string: $row["business_id"]),
-                "name" => htmlspecialchars($row["business_name"]),
-                "date" => htmlspecialchars($row["date"]),
-                "location" => htmlspecialchars($row["location"]),
-                "category" => htmlspecialchars($row["category"])
-            ];
-        }
-
-        // Return JSON response
-        header('Content-Type: application/json');
-        echo json_encode($data);
-
-        // Close connections
-        $stmt->close();
-        $conn->close();
-        exit();
-    } else if (isset($_GET["fetchMessages"]) && (isset($_GET["business-id"]) || is_numeric($_GET["business-id"]))) {
-        $businessId = (int) $_GET["business-id"];
-
-        $sql = "SELECT m.id, m.conversation_id, u.id AS user_id, u.username AS sender_name, m.message, m.timestamp 
-    FROM messages m JOIN users u ON m.sender_id = u.id 
-    WHERE m.conversation_id = ( SELECT id FROM conversations WHERE user_id = ? AND business_id = ? LIMIT 1 ) ORDER BY m.timestamp ASC;";
-        $stmt = $conn->prepare($sql);
-
-        $stmt->bind_param("ii", $userId, $businessId);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        $data = [];
-        while ($row = $result->fetch_assoc()) {
-            $data[] = [
-                "id" => htmlspecialchars(string: $row["id"]),
-                "conversation_id"=> htmlspecialchars(string: $row["conversation_id"]),
-                "user_id" => htmlspecialchars(string: $row["user_id"]),
-                "message" => htmlspecialchars(string: $row["message"]),
-                "timestamp" => htmlspecialchars($row["timestamp"]),
-                "message_type" => $userId === $row["user_id"] ? "sent" : "received"
-            ];
-        }
-
-        // Return JSON response
-        header('Content-Type: application/json');
-        echo json_encode($data);
-
-        // Close connections
-        $stmt->close();
-        $conn->close();
-        exit();
-    }
-} else if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_GET["sendMessage"])) {
-    // Validate and sanitize inputs
-    $conversationId = isset($_POST["conversation_id"]) ? intval($_POST["conversation_id"]) : null;
-    $businessId = isset($_POST["business-id"]) ? intval($_POST["business-id"]) : null;
-    $message = isset($_POST["message"]) ? trim($_POST["message"]) : "";
-
-    // Check if required fields are available
-    if (!$conversationId || !$businessId || empty($message)) {
-        echo json_encode(["success" => false, "error" => "Missing required fields"]);
-        exit();
-    }
-
-    // Prepare SQL statement to insert message
-    $sql = "INSERT INTO messages (conversation_id, sender_id, message, timestamp) VALUES (?, ?, ?, NOW())";
     $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if (!$stmt) {
-        echo json_encode(["success" => false, "error" => "Database error: " . $conn->error]);
-        exit();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = [
+            "id" => htmlspecialchars($row["booking_id"]),
+            "business_id" => htmlspecialchars($row["business_id"]),
+            "name" => htmlspecialchars($row["business_name"]),
+            "date" => htmlspecialchars($row["date"]), // Dynamic date based on category
+            "location" => htmlspecialchars($row["location"]),
+            "category" => htmlspecialchars($row["category"])
+        ];
     }
 
-    // Bind parameters (assuming $userId is the logged-in user's ID)
-    $stmt->bind_param("iis", $conversationId, $userId, $message);
+    // Return JSON response
+    header('Content-Type: application/json');
+    echo json_encode($data);
 
-    // Execute the query
-    if ($stmt->execute()) {
-        echo json_encode(["success" => true, "message" => "Message sent successfully"]);
-    } else {
-        echo json_encode(["success" => false, "error" => "Failed to send message"]);
-    }
-
-    // Close the statement
+    // Close connections
     $stmt->close();
     $conn->close();
     exit();
 }
-
-
 
 include("../../includes/homepage_navbar.php");
 ?>
@@ -208,7 +147,7 @@ include("../../includes/homepage_navbar.php");
         height: calc(100% - 50px);
         flex: 1;
         display: flex;
-        justify-content:space-between;
+        justify-content: space-between;
         flex-direction: column;
         padding: 10px;
     }
@@ -255,12 +194,13 @@ include("../../includes/homepage_navbar.php");
         flex-direction: column;
     }
 
-    .chat-container{
+    .chat-container {
         margin-top: 10px;
         display: flex;
         gap: 10px;
         flex-direction: row;
     }
+
     /* Chat Input */
     textarea {
         margin-top: 0px;
@@ -335,9 +275,9 @@ include("../../includes/homepage_navbar.php");
             </div>
             <div class="chat-container">
                 <textarea id="chatInput" placeholder="Type a message..."></textarea>
-            <button id="sendChatBtn">Send</button>
+                <button id="sendChatBtn">Send</button>
             </div>
-            
+
         </div>
     </div>
 
@@ -452,190 +392,8 @@ include("../../includes/homepage_navbar.php");
     </div>
 
     <script src="../../assets/js/add-location.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const modal = document.getElementById("bookingInfoModal");
-            const openModalBtn = document.getElementById("bookingInfoBtn");
-            const closeBtn = modal.querySelector(".close-btn");
-            const bookingDetails = document.getElementById("bookingDetails");
-
-            const chatModal = document.getElementById("chatModal");
-            const chatClose = document.querySelector(".chat-close");
-            const chatBookingName = document.getElementById("chatBookingName");
-            const messagesContainer = document.getElementById("messages");
-            const chatInput = document.getElementById("chatInput");
-            const sendChatBtn = document.getElementById("sendChatBtn");
-
-            let currentBusinessId = null;
-            let fetchMessagesInterval = null;
-
-            // Fetch bookings and populate the modal
-            async function fetchBookings() {
-                try {
-                    const response = await fetch(window.location.href + "?fetchBookings=true");
-                    if (!response.ok) throw new Error("Failed to fetch bookings");
-
-                    const bookings = await response.json();
-                    if (bookings.error) throw new Error(bookings.error);
-
-                    if (bookings.length === 0) {
-                        bookingDetails.innerHTML = "<p>No bookings found.</p>";
-                        return;
-                    }
-
-                    bookingDetails.innerHTML = bookings.map(booking => `
-                <div class="booking-item modal-cards">
-                    <p><strong>Destination:</strong> ${booking.name}</p>
-                    <p><strong>Date:</strong> ${new Date(booking.date).toLocaleDateString()}</p>
-                    <p><strong>Location:</strong> ${booking.location}</p>
-                    <p><strong>Category:</strong> ${booking.category}</p>
-                    <button class="chat-now-btn" data-business-id="${booking.business_id}" data-booking-name="${booking.name}">Chat Now</button>
-                </div>
-            `).join("");
-
-                    attachChatEventListeners();
-                } catch (error) {
-                    bookingDetails.innerHTML = `<p>Error loading bookings.</p>`;
-                    console.error(error);
-                }
-            }
-
-            // Attach event listeners to "Chat Now" buttons
-            function attachChatEventListeners() {
-                document.querySelectorAll(".chat-now-btn").forEach(button => {
-                    button.addEventListener("click", function () {
-                        currentBusinessId = this.getAttribute("data-business-id");
-                        chatBookingName.textContent = this.getAttribute("data-booking-name");
-                        chatModal.style.display = "block";
-                        fetchMessages(); // Load messages when chat opens
-                        startFetchingMessages();
-                    });
-                });
-            }
-           
-            let currentConversationId = null
-            // Fetch messages from the server
-            async function fetchMessages() {
-                if (!currentBusinessId) return;
-
-                try {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set("business-id", currentBusinessId);
-                    url.searchParams.set("fetchMessages", "true");
-
-                    const response = await fetch(url.toString(), {
-                        method: "GET",
-                        headers: { "Content-Type": "application/json" },
-                    });
-
-                     const text = await response.text(); // Get raw response text
-
-                    try {
-                        const messages = JSON.parse(text);
-
-                        if (messages.length > 0) {
-                            // Store the conversation ID from the first message
-                            currentConversationId = messages[0].conversation_id || null;
-                        }
-
-                        displayMessages(messages);
-                    } catch (jsonError) {
-                        console.error("JSON Parsing Error:", jsonError, "Raw response:", text);
-                    }
-                } catch (error) {
-                    console.error("Error fetching messages:", error);
-                }
-            }
-
-
-            // Display messages in chat modal
-            function displayMessages(messages) {
-                messagesContainer.innerHTML = messages.map(msg => `
-            <div class="message ${msg.message_type}">${msg.message}</div>
-        `).join("");
-                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to latest message
-            }
-
-            // Send message function
-            async function sendMessage() {
-               
-                const message = chatInput.value.trim();
-                if (!message || !currentBusinessId) return;
-                
-                try {
-                    const response = await fetch(window.location.href + "?sendMessage=true", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                        body: `conversation_id=${encodeURIComponent(currentConversationId)}&business-id=${encodeURIComponent(currentBusinessId)}&message=${encodeURIComponent(message)}`
-                    });
-
-                    if (!response.ok) throw new Error("Failed to send message");
-
-                    chatInput.value = ""; // Clear input field
-                    fetchMessages(); // Refresh messages after sending
-                } catch (error) {
-                    console.error("Error sending message:", error);
-                }
-            }
-
-            // Start interval to fetch messages every 5 seconds
-            function startFetchingMessages() {
-                if (fetchMessagesInterval) clearInterval(fetchMessagesInterval);
-                fetchMessagesInterval = setInterval(fetchMessages, 5000);
-            }
-
-            // Stop fetching messages
-            function stopFetchingMessages() {
-                if (fetchMessagesInterval) {
-                    clearInterval(fetchMessagesInterval);
-                    fetchMessagesInterval = null;
-                }
-            }
-
-            // Open booking modal
-            if (openModalBtn) {
-                openModalBtn.addEventListener("click", () => {
-                    modal.style.display = "flex";
-                    fetchBookings();
-                });
-            }
-
-            // Close booking modal
-            closeBtn.addEventListener("click", () => modal.style.display = "none");
-            window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
-
-            // Close chat modal
-            chatClose.addEventListener("click", () => {
-                chatModal.style.display = "none";
-                stopFetchingMessages();
-            });
-
-            window.addEventListener("click", (e) => {
-                if (e.target === chatModal) {
-                    chatModal.style.display = "none";
-                    stopFetchingMessages();
-                }
-            });
-
-            // Send message event
-            sendChatBtn.addEventListener("click", sendMessage);
-            chatInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") sendMessage();
-            });
-        });
-
-
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const bookingModal = document.getElementById("bookingInfoModal");
-            const bookingBtn = document.getElementById("bookingInfoBtn");
-            const closeBtns = document.querySelectorAll(".close-btn");
-
-            bookingBtn.addEventListener("click", () => bookingModal.style.display = "flex");
-            closeBtns.forEach(btn => btn.addEventListener("click", () => bookingModal.style.display = "none"));
-            window.addEventListener("click", (e) => { if (e.target === bookingModal) bookingModal.style.display = "none"; });
-        });
-    </script>
+    <script src="../../assets/js/message.js"></script>
+    <script src="../../assets/js/booking.js"></script>
 </body>
 
 </html>

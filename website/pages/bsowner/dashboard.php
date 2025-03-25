@@ -42,10 +42,11 @@ $stmt_user->close();
 // Fetch business information
 $business_name = "Your Business";
 $business_id = null;
+$category = null;
 
 if ($is_business_owner) {
     // Correct query: Using `user_id` to fetch the business details
-    $sql_business = "SELECT id, name FROM businesses WHERE user_id = ?";
+    $sql_business = "SELECT id, name, category FROM businesses WHERE user_id = ?";
     $stmt_business = $conn->prepare($sql_business);
 
     if (!$stmt_business) {
@@ -59,22 +60,34 @@ if ($is_business_owner) {
     if ($row_business = $result_business->fetch_assoc()) {
         $business_id = $row_business['id'];
         $business_name = $row_business['name'];
+        $category = $row_business["category"];
     } else {
         echo "<p>No business found for this user.</p>";
         $business_id = null;
     }
     $stmt_business->close();
 }
+
+
+function fetchBookings($business_id, $category)
+{
+
+}
+
+
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="dashboard-container">
         <nav class="sidebar">
@@ -97,7 +110,7 @@ if ($is_business_owner) {
 
             <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
                 <script>
-                    document.addEventListener('DOMContentLoaded', function() {
+                    document.addEventListener('DOMContentLoaded', function () {
                         Swal.fire({
                             title: 'Success!',
                             text: 'Business details updated successfully.',
@@ -202,20 +215,19 @@ if ($is_business_owner) {
                     </thead>
                     <tbody>
                         <?php
-                        if ($business_id) {
-                            // Fetch bookings for the logged-in owner's business
-                            $query_bookings = "SELECT id, first_name, last_name, status 
+                        // Fetch bookings for the logged-in owner's business
+                        $query_bookings = "SELECT id, first_name, last_name, status 
                                                FROM bookings 
                                                WHERE business_id = ?";
-                            $stmt_bookings = $conn->prepare($query_bookings);
-                            $stmt_bookings->bind_param("i", $business_id);
-                            $stmt_bookings->execute();
-                            $result_bookings = $stmt_bookings->get_result();
+                        $stmt_bookings = $conn->prepare($query_bookings);
+                        $stmt_bookings->bind_param("i", $business_id);
+                        $stmt_bookings->execute();
+                        $result_bookings = $stmt_bookings->get_result();
 
-                            if ($result_bookings->num_rows > 0) {
-                                while ($row = $result_bookings->fetch_assoc()) {
-                                    $customerName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
-                                    echo "<tr>
+                        if ($result_bookings->num_rows > 0) {
+                            while ($row = $result_bookings->fetch_assoc()) {
+                                $customerName = htmlspecialchars($row['first_name'] . ' ' . $row['last_name']);
+                                echo "<tr>
                                             <td>{$row['id']}</td>
                                             <td>{$customerName}</td>
                                             <td>{$row['status']}</td>
@@ -224,14 +236,12 @@ if ($is_business_owner) {
                                                 <a href='../process-booking.php?id={$row['id']}&action=reject' class='btn btn-reject'>Reject</a>
                                             </td>
                                           </tr>";
-                                }
-                            } else {
-                                echo "<tr><td colspan='4'>No bookings found.</td></tr>";
                             }
-                            $stmt_bookings->close();
                         } else {
-                            echo "<tr><td colspan='4'>Business not found.</td></tr>";
+                            echo "<tr><td colspan='4'>No bookings found.</td></tr>";
                         }
+                        $stmt_bookings->close();
+
                         ?>
                     </tbody>
                 </table>
@@ -239,4 +249,5 @@ if ($is_business_owner) {
         </main>
     </div>
 </body>
+
 </html>

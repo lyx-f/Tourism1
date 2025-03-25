@@ -2,7 +2,6 @@
 include("../../includes/homepage_navbar.php");
 include('../../config/database.php');
 
-session_start();
 
 // Get business_id from URL or session
 $business_id = isset($_GET['business_id']) ? intval($_GET['business_id']) : (isset($_SESSION['business_id']) ? $_SESSION['business_id'] : null);
@@ -245,7 +244,7 @@ $category = $business['category'] ?? 'accommodations'; // Default category
             <?php endif; ?>
 
             <p id="total_bill">Total Bill: $0.00</p>
-            <button type="submit" class="btn-submit">BOOK NOW</button>
+            <button type="submit" class="btn-submit" name="category" value="<?=$category?>">BOOK NOW</button>
         </form>
     </div>
         <script>

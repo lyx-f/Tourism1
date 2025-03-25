@@ -50,13 +50,11 @@ if (isset($_GET['id'], $_GET['action'])) {
     $stmt->bind_param('si', $status, $booking_id);
 
     if ($stmt->execute()) {
-        // Log the activity
-        $current_time = date("Y-m-d H:i:s");
-        $activity_sql = "INSERT INTO activities (booking_id, time) VALUES (?, ?, ?)";
+        $activity_sql = "INSERT INTO activities (booking_id, time) VALUES (?, ?)";
         $activity_stmt = $conn->prepare($activity_sql);
 
         if ($activity_stmt) {
-            $activity_stmt->bind_param("iss", $booking_id, $current_time);
+            $activity_stmt->bind_param("is", $booking_id,$status );
             if (!$activity_stmt->execute()) {
                 echo "Status updated, but failed to record activity: " . $activity_stmt->error;
             }
@@ -84,49 +82,90 @@ if (isset($_GET['id'], $_GET['action'])) {
 
 // Handle form submission for new bookings
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     // Collect booking data from the form
     $business_id = intval($_POST['business_id']); // Get the selected business ID
-    $firstName = htmlspecialchars(trim($_POST['first_name']));
-    $lastName = htmlspecialchars(trim($_POST['last_name']));
-    $email = htmlspecialchars(trim($_POST['email']));
-    $phone = htmlspecialchars(trim($_POST['phone']));
-    $departureDate = $_POST['departure_date'];
-    $arrivalDate = $_POST['arrival_date'];
-    $guests = intval($_POST['guests']);
     $status = "Pending";
 
+
+    if ($_POST['category'] === "accommodations") {
+
+        accomodationBooking($conn, $user_id, $business_id);
+
+    }
+
+} else {
+    echo "Invalid request method.";
+}
+
+
+function accomodationBooking($conn, $user_id, $business_id)
+{
+    $firstName = $_POST["first_name"] ?? null;
+    $lastName = $_POST["last_name"] ?? null;
+    $email = $_POST["email"] ?? null;
+    $phone = $_POST["phone"] ?? null;
+    $checkIn = $_POST["checkin"] ?? null;
+    $checkOut = $_POST["checkout"] ?? null;
+    $adults = $_POST["adults"] ?? 0;
+    $children = $_POST["children"] ?? 0;
+    $roomType = $_POST["room_type"] ?? null;
+    $status = "Pending"; // Default status
+
     // Validate required fields
-    if (empty($business_id) || empty($firstName) || empty($lastName) || empty($email) || empty($phone) || empty($departureDate) || empty($arrivalDate) || empty($guests)) {
-        echo "All fields are required!";
+    if (
+        empty($business_id) || empty($user_id) || empty($firstName) || empty($lastName) || empty($email) ||
+        empty($phone) || empty($checkIn) || empty($checkOut) || ($adults == 0 && $children == 0)
+    ) {
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode("All fields are required!"));
         exit();
     }
 
     // Validate email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo "Invalid email format!";
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode("Invalid email format!"));
         exit();
     }
 
-    // Validate dates
-    if (strtotime($arrivalDate) > strtotime($departureDate)) {
-        echo "Arrival date cannot be after departure date!";
+    // Validate check-in and check-out dates
+    if (strtotime($checkIn) > strtotime($checkOut)) {
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode("Check-in date cannot be after check-out date!"));
         exit();
     }
 
-    // Insert the booking into the database
-    $sql = "INSERT INTO bookings (first_name, last_name, email, phone, business_id, status, departure_date, arrival_date, guests, user_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-    $stmt = $conn->prepare($sql);
+    // Start transaction
+    $conn->begin_transaction();
 
-    if (!$stmt) {
-        die("Error preparing statement: " . $conn->error);
-    }
+    try {
+        // Insert into bookings table
+        $booking_sql = "INSERT INTO bookings (business_id, first_name, last_name, user_id, status) VALUES (?, ?, ?, ?, ?)";
+        $booking_stmt = $conn->prepare($booking_sql);
+        if (!$booking_stmt) {
+            throw new Exception("Error preparing booking statement: " . $conn->error);
+        }
 
-    $stmt->bind_param("ssssisssiss", $firstName, $lastName, $email, $phone, $business_id, $departureDate, $arrivalDate, $guests, $user_id);
+        $booking_stmt->bind_param("issis", $business_id, $firstName, $lastName, $user_id, $status);
+        if (!$booking_stmt->execute()) {
+            throw new Exception("Error inserting booking: " . $booking_stmt->error);
+        }
 
-    if ($stmt->execute()) {
-        // Get the last inserted booking ID
-        $booking_id = $stmt->insert_id;
+        $booking_id = $booking_stmt->insert_id; // Get the last inserted booking ID
+        $booking_stmt->close();
+
+        // Insert into accommodations_booking_details table
+        $details_sql = "INSERT INTO accommodations_booking_details (booking_id, email, phone_number, checkIn, checkOut, adultsCount, childrenCount, room_type) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $details_stmt = $conn->prepare($details_sql);
+        if (!$details_stmt) {
+            throw new Exception("Error preparing details statement: " . $conn->error);
+        }
+
+        $details_stmt->bind_param("isssssis", $booking_id, $email, $phone, $checkIn, $checkOut, $adults, $children, $roomType);
+        if (!$details_stmt->execute()) {
+            throw new Exception("Error inserting booking details: " . $details_stmt->error);
+        }
+
+        $details_stmt->close();
 
         // Insert into activities table
         $activity_status = "Pending";
@@ -134,27 +173,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $activity_sql = "INSERT INTO activities (booking_id, status, time) VALUES (?, ?, ?)";
         $activity_stmt = $conn->prepare($activity_sql);
-
-        if ($activity_stmt) {
-            $activity_stmt->bind_param("iss", $booking_id, $activity_status, $current_time);
-
-            if (!$activity_stmt->execute()) {
-                echo "Booking successful, but failed to record activity: " . $activity_stmt->error;
-            }
-
-            $activity_stmt->close();
-        } else {
-            echo "Booking successful, but failed to prepare activity statement: " . $conn->error;
+        if (!$activity_stmt) {
+            throw new Exception("Error preparing activity statement: " . $conn->error);
         }
 
-        echo "Booking successful!";
-    } else {
-        echo "Error: " . $stmt->error;
-    }
+        $activity_stmt->bind_param("iss", $booking_id, $activity_status, $current_time);
+        if (!$activity_stmt->execute()) {
+            throw new Exception("Error inserting activity: " . $activity_stmt->error);
+        }
 
-    $stmt->close();
-    $conn->close();
-} else {
-    echo "Invalid request method.";
+        $activity_stmt->close();
+
+        // Commit transaction
+        $conn->commit();
+        $conn->close();
+
+        header("Location: booking.php?business_id=" . $business_id . "&success=" . urlencode("Booking successful!"));
+        exit();
+    } catch (Exception $e) {
+        $conn->rollback();
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode($e->getMessage()));
+        exit();
+    }
 }
-?>
+
