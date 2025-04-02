@@ -96,6 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } else if ($_POST["category"] === "attractions") {
         attractionBooking($conn, $user_id, $business_id);
+    } else if ($_POST["category"] === "restaurants") {
+        restaurantBooking($conn, $user_id, $business_id);
     }
 
 } else {
@@ -255,6 +257,94 @@ function attractionBooking($conn, $user_id, $business_id)
         }
 
         $details_stmt->bind_param("isiiisss", $booking_id, $visit_date, $adult_quantity, $senior_quantity, $child_quantity, $accommodation_type, $room_type, $cottage_type);
+        if (!$details_stmt->execute()) {
+            throw new Exception("Error inserting booking details: " . $details_stmt->error);
+        }
+
+        $details_stmt->close();
+
+        // Insert into activities table
+        $activity_status = "Pending";
+        $current_time = date("Y-m-d H:i:s");
+
+        $activity_sql = "INSERT INTO activities (booking_id, status, time) VALUES (?, ?, ?)";
+        $activity_stmt = $conn->prepare($activity_sql);
+        if (!$activity_stmt) {
+            throw new Exception("Error preparing activity statement: " . $conn->error);
+        }
+
+        $activity_stmt->bind_param("iss", $booking_id, $activity_status, $current_time);
+        if (!$activity_stmt->execute()) {
+            throw new Exception("Error inserting activity: " . $activity_stmt->error);
+        }
+
+        $activity_stmt->close();
+
+        // Commit transaction
+        $conn->commit();
+        $conn->close();
+
+        header("Location: booking.php?business_id=" . $business_id . "&success=" . urlencode("Booking successful!"));
+        exit();
+    } catch (Exception $e) {
+        $conn->rollback();
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode($e->getMessage()));
+        exit();
+    }
+}
+
+function restaurantBooking($conn, $user_id, $business_id)
+{
+    $firstName = $_POST["first_name"] ?? null;
+    $lastName = $_POST["last_name"] ?? null;
+    $phone = $_POST["phone"] ?? null;
+    $reservation_datetime = $_POST["reservation_datetime"] ?? null;
+    $reservation_type = $_POST["reservation_type"] ?? null;
+    $other_details = $_POST["other_details"] ?? null;
+    $special_requests = $_POST["special_requests"] ?? null;
+    $guests = $_POST["guests"] ?? null;
+
+    $status = "Pending"; // Default status
+
+    // Validate required fields
+    if (
+        empty($business_id) || empty($user_id) || empty($firstName) || empty($lastName) || empty($phone) || empty($reservation_datetime) ||
+        empty($reservation_type) || ($guests == 0)
+    ) {
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode("All fields are required!"));
+        exit();
+    }
+
+
+
+    // Start transaction
+    $conn->begin_transaction();
+
+    try {
+        // Insert into bookings table
+        $booking_sql = "INSERT INTO bookings (business_id, first_name, last_name, user_id, status) VALUES (?, ?, ?, ?, ?)";
+        $booking_stmt = $conn->prepare($booking_sql);
+        if (!$booking_stmt) {
+            throw new Exception("Error preparing booking statement: " . $conn->error);
+        }
+
+        $booking_stmt->bind_param("issis", $business_id, $firstName, $lastName, $user_id, $status);
+        if (!$booking_stmt->execute()) {
+            throw new Exception("Error inserting booking: " . $booking_stmt->error);
+        }
+
+        $booking_id = $booking_stmt->insert_id; // Get the last inserted booking ID
+        $booking_stmt->close();
+
+        // Insert into restaurants_booking_details table
+        $details_sql = "INSERT INTO restaurants_booking_details (booking_id, phone, reservation_datetime, reservation_type, other_details, special_requests, guests) 
+                        VALUES (?, ?, ?, ?, ?, ?,?)";
+        $details_stmt = $conn->prepare($details_sql);
+        if (!$details_stmt) {
+            throw new Exception("Error preparing details statement: " . $conn->error);
+        }
+
+        $details_stmt->bind_param("isssssi", $booking_id, $phone, $reservation_datetime, $reservation_type, $other_details, $special_requests, $guests);
         if (!$details_stmt->execute()) {
             throw new Exception("Error inserting booking details: " . $details_stmt->error);
         }
