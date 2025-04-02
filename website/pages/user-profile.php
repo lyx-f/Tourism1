@@ -14,6 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["fetchBookings"])) {
 
     $sql = "SELECT 
                 b.id AS booking_id, 
+                b.status AS status,
                 biz.id AS business_id, 
                 biz.name AS business_name, 
                 biz.location, 
@@ -44,7 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] === "GET" && isset($_GET["fetchBookings"])) {
             "name" => htmlspecialchars($row["business_name"]),
             "date" => htmlspecialchars($row["date"]), // Dynamic date based on category
             "location" => htmlspecialchars($row["location"]),
-            "category" => htmlspecialchars($row["category"])
+            "category" => htmlspecialchars($row["category"]),
+            "status" => htmlspecialchars($row["status"]),
         ];
     }
 
