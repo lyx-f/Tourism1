@@ -284,7 +284,7 @@ include("../../includes/homepage_navbar.php");
     <!-- Business Form Modal -->
     <div id="businessFormModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
+            <span class="close-btn" id="close-business-modal-btn">&times;</span>
             <h4>Business Owner Registration</h4>
             <form action="submit_destination.php" method="POST" enctype="multipart/form-data">
                 <div class="form-row">
@@ -391,9 +391,19 @@ include("../../includes/homepage_navbar.php");
         </div>
     </div>
 
-    <script src="../../assets/js/add-location.js"></script>
+    <!-- <script src="../../assets/js/add-location.js"></script> -->
     <script src="../../assets/js/message.js"></script>
     <script src="../../assets/js/booking.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.getElementById("businessFormModal");
+            const openFormBtn = document.getElementById("openForm");
+            const closeBtn = document.getElementById("close-business-modal-btn");
+            openFormBtn.addEventListener("click", () => modal.style.display = "flex");
+            closeBtn.addEventListener("click", () => modal.style.display = "none");
+            window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+        });
+    </script>
 </body>
 
 </html>

@@ -54,7 +54,7 @@ if (isset($_GET['id'], $_GET['action'])) {
         $activity_stmt = $conn->prepare($activity_sql);
 
         if ($activity_stmt) {
-            $activity_stmt->bind_param("is", $booking_id,$status );
+            $activity_stmt->bind_param("is", $booking_id, $status);
             if (!$activity_stmt->execute()) {
                 echo "Status updated, but failed to record activity: " . $activity_stmt->error;
             }
@@ -80,6 +80,8 @@ if (isset($_GET['id'], $_GET['action'])) {
     exit();
 }
 
+
+
 // Handle form submission for new bookings
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -92,6 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         accomodationBooking($conn, $user_id, $business_id);
 
+    } else if ($_POST["category"] === "attractions") {
+        attractionBooking($conn, $user_id, $business_id);
     }
 
 } else {
@@ -197,3 +201,92 @@ function accomodationBooking($conn, $user_id, $business_id)
     }
 }
 
+
+function attractionBooking($conn, $user_id, $business_id)
+{
+    $firstName = $_POST["first_name"] ?? null;
+    $lastName = $_POST["last_name"] ?? null;
+    $visit_date = $_POST["visit_date"] ?? null;
+    $adult_quantity = $_POST["adult_quantity"] ?? null;
+    $senior_quantity = $_POST["senior_quantity"] ?? null;
+    $child_quantity = $_POST["child_quantity"] ?? null;
+    $accommodation_type = $_POST["accommodation_type"] ?? null;
+    $room_type = $_POST["attractions_room_type"] ?? null;
+    $cottage_type = $_POST["attractions_cottage_type"] ?? null;
+
+    $status = "Pending"; // Default status
+
+    // Validate required fields
+    if (
+        empty($business_id) || empty($user_id) || empty($firstName) || empty($lastName) || empty($visit_date) ||
+        empty($accommodation_type) || ($adult_quantity <= 0 && $senior_quantity <= 0 && $child_quantity <= 0)
+    ) {
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode("All fields are required!"));
+        exit();
+    }
+
+
+
+    // Start transaction
+    $conn->begin_transaction();
+
+    try {
+        // Insert into bookings table
+        $booking_sql = "INSERT INTO bookings (business_id, first_name, last_name, user_id, status) VALUES (?, ?, ?, ?, ?)";
+        $booking_stmt = $conn->prepare($booking_sql);
+        if (!$booking_stmt) {
+            throw new Exception("Error preparing booking statement: " . $conn->error);
+        }
+
+        $booking_stmt->bind_param("issis", $business_id, $firstName, $lastName, $user_id, $status);
+        if (!$booking_stmt->execute()) {
+            throw new Exception("Error inserting booking: " . $booking_stmt->error);
+        }
+
+        $booking_id = $booking_stmt->insert_id; // Get the last inserted booking ID
+        $booking_stmt->close();
+
+        // Insert into attractions_booking_details table
+        $details_sql = "INSERT INTO attractions_booking_details (booking_id, visit_date, adult_quantity, senior_quantity, children_quantity, accommodation_type, room_type, cottage_type) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $details_stmt = $conn->prepare($details_sql);
+        if (!$details_stmt) {
+            throw new Exception("Error preparing details statement: " . $conn->error);
+        }
+
+        $details_stmt->bind_param("isiiisss", $booking_id, $visit_date, $adult_quantity, $senior_quantity, $child_quantity, $accommodation_type, $room_type, $cottage_type);
+        if (!$details_stmt->execute()) {
+            throw new Exception("Error inserting booking details: " . $details_stmt->error);
+        }
+
+        $details_stmt->close();
+
+        // Insert into activities table
+        $activity_status = "Pending";
+        $current_time = date("Y-m-d H:i:s");
+
+        $activity_sql = "INSERT INTO activities (booking_id, status, time) VALUES (?, ?, ?)";
+        $activity_stmt = $conn->prepare($activity_sql);
+        if (!$activity_stmt) {
+            throw new Exception("Error preparing activity statement: " . $conn->error);
+        }
+
+        $activity_stmt->bind_param("iss", $booking_id, $activity_status, $current_time);
+        if (!$activity_stmt->execute()) {
+            throw new Exception("Error inserting activity: " . $activity_stmt->error);
+        }
+
+        $activity_stmt->close();
+
+        // Commit transaction
+        $conn->commit();
+        $conn->close();
+
+        header("Location: booking.php?business_id=" . $business_id . "&success=" . urlencode("Booking successful!"));
+        exit();
+    } catch (Exception $e) {
+        $conn->rollback();
+        header("Location: booking.php?business_id=" . $business_id . "&error=" . urlencode($e->getMessage()));
+        exit();
+    }
+}
