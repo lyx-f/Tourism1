@@ -34,34 +34,9 @@ $category = $business['category'] ?? 'accommodations'; // Default category
     <link rel="stylesheet" href="../../assets/css/homepage.css">
     <link rel="stylesheet" href="../../assets/css/footer.css">
     <link rel="stylesheet" href="../../assets/css/booking.css">
-    <script>
-        function calculateBill() {
-            let billAmount = 0;
-            const category = "<?= $category ?>";
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            if (category === 'accommodations') {
-                const checkin = new Date(document.getElementById('checkin').value);
-                const checkout = new Date(document.getElementById('checkout').value);
-                const roomType = document.getElementById('room_type').value;
-                const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
 
-                let roomRates = { 'standard': 100, 'double': 150, 'family': 300, 'king': 400, 'queen': 350, 'suite': 250 };
-                billAmount = nights * (roomRates[roomType] || 0);
-            } else if (category === 'restaurants') {
-                const guests = parseInt(document.getElementById('guests').value);
-                const pricePerGuest = 20;
-                billAmount = guests * pricePerGuest;
-            } else if (category === 'attractions') {
-                const adultQty = parseInt(document.getElementById('adult_quantity').value) || 0;
-                const seniorQty = parseInt(document.getElementById('senior_quantity').value) || 0;
-                const childQty = parseInt(document.getElementById('child_quantity').value) || 0;
-
-                let ticketRates = { adult: 50, senior: 40, child: 30 };
-                billAmount = (adultQty * ticketRates.adult) + (seniorQty * ticketRates.senior) + (childQty * ticketRates.child);
-            }
-            document.getElementById('total_bill').innerText = `Total Bill: $${billAmount.toFixed(2)}`;
-        }
-    </script>
 </head>
 
 <body>
@@ -224,7 +199,7 @@ $category = $business['category'] ?? 'accommodations'; // Default category
                 </div>
                 <div class="form-group">
                     <label for="reservation_type">Reservation Type:</label>
-                    <select id="reservation_type" name="reservation_type" required>
+                    <select id="reservation_type" name="reservation_type" required onchange="toggleReservationType()">
                         <option value="dining">Dining</option>
                         <option value="special_event">Special Event</option>
                         <option value="other">Other</option>
@@ -253,55 +228,82 @@ $category = $business['category'] ?? 'accommodations'; // Default category
             <button type="submit" class="btn-submit" name="category" value="<?= $category ?>">BOOK NOW</button>
         </form>
     </div>
-    <script>
-        document.getElementById('reservation_type').addEventListener('change', function () {
-            let otherSpecify = document.getElementById('other_specify');
-            if (this.value === 'other') {
-                otherSpecify.style.display = 'block';
-            } else {
-                otherSpecify.style.display = 'none';
-            }
-        });
 
-        function toggleAccommodation() {
-            var selectedType = document.getElementById("accommodation_type").value;
-
-            // Show or hide the correct option
-            document.getElementById("cottage_options").style.display = selectedType === "cottage" ? "block" : "none";
-            document.getElementById("room_options").style.display = selectedType === "room" ? "block" : "none";
-        }
-
-        function calculateBill() {
-            let billAmount = 0;
-            const category = "<?= $category ?>";
-            const subcategory = "<?= $subcategory ?>";
-
-            if (category === 'attractions' && subcategory === 'resorts') {
-                // Ticket Prices
-                const adultQty = parseInt(document.getElementById('adult_quantity').value) || 0;
-                const seniorQty = parseInt(document.getElementById('senior_quantity').value) || 0;
-                const childQty = parseInt(document.getElementById('child_quantity').value) || 0;
-                let ticketRates = { adult: 50, senior: 40, child: 30 };
-                billAmount += (adultQty * ticketRates.adult) + (seniorQty * ticketRates.senior) + (childQty * ticketRates.child);
-
-                // Accommodation Prices
-                const accommodationType = document.getElementById('accommodation_type').value;
-                if (accommodationType === 'cottage') {
-                    const cottageType = document.getElementById('cottage_type').value;
-                    let cottageRates = { 'standard': 50, 'family': 120, 'group': 250 };
-                    billAmount += cottageRates[cottageType] || 0;
-                } else if (accommodationType === 'room') {
-                    const roomType = document.getElementById('room_type').value;
-                    let roomRates = { 'single': 80, 'double': 120, 'family': 200 };
-                    billAmount += roomRates[roomType] || 0;
-                }
-            }
-
-            document.getElementById('total_bill').innerText = `Total Bill: $${billAmount.toFixed(2)}`;
-        }
-    </script>
 
     <?php include("../../includes/footer.php"); ?>
 </body>
+
+<script>
+      
+    document.addEventListener("DOMContentLoaded", function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        })
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get("success");
+        const error = urlParams.get("error");
+
+        if (successMessage) {
+            Toast.fire({
+                icon: "success",
+                title: successMessage,
+            });
+        }else if(error){
+            Toast.fire({
+                icon: "error",
+                title: "Something went wrong",
+            });
+        }
+    });
+
+    function calculateBill() {
+        let billAmount = 0;
+        const category = "<?= $category ?>";
+
+        if (category === 'accommodations') {
+            const checkin = new Date(document.getElementById('checkin').value);
+            const checkout = new Date(document.getElementById('checkout').value);
+            const roomType = document.getElementById('room_type').value;
+            const nights = (checkout - checkin) / (1000 * 60 * 60 * 24);
+
+            let roomRates = { 'standard': 100, 'double': 150, 'family': 300, 'king': 400, 'queen': 350, 'suite': 250 };
+            billAmount = nights * (roomRates[roomType] || 0);
+        } else if (category === 'restaurants') {
+            const guests = parseInt(document.getElementById('guests').value);
+            const pricePerGuest = 20;
+            billAmount = guests * pricePerGuest;
+        } else if (category === 'attractions') {
+            const adultQty = parseInt(document.getElementById('adult_quantity').value) || 0;
+            const seniorQty = parseInt(document.getElementById('senior_quantity').value) || 0;
+            const childQty = parseInt(document.getElementById('child_quantity').value) || 0;
+
+            let ticketRates = { adult: 50, senior: 40, child: 30 };
+            billAmount = (adultQty * ticketRates.adult) + (seniorQty * ticketRates.senior) + (childQty * ticketRates.child);
+        }
+        document.getElementById('total_bill').innerText = `Total Bill: $${billAmount.toFixed(2)}`;
+    }
+
+    function toggleAccommodation() {
+        var selectedType = document.getElementById("accommodation_type").value;
+
+        // Show or hide the correct option
+        document.getElementById("cottage_options").style.display = selectedType === "cottage" ? "block" : "none";
+        document.getElementById("room_options").style.display = selectedType === "room" ? "block" : "none";
+    }
+
+    function toggleReservationType() {
+        let reservationType = document.getElementById('reservation_type').value;
+        let otherSpecify = document.getElementById('other_specify');
+        if (reservationType === 'other') {
+            otherSpecify.style.display = 'block';
+        } else {
+            otherSpecify.style.display = 'none';
+        }
+    }
+</script>
 
 </html>

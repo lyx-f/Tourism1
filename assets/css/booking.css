@@ -99,3 +99,7 @@ select {
 .btn-submit:hover {
     background-color: #00251f;
 }
+.custom-swal-size {
+    font-size: 18px; /* Adjust font size */
+    padding: 20px;   /* Add padding */
+}
