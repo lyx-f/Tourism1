@@ -25,7 +25,7 @@ $accommodations = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
         <div class="grid-container">
        <a href="resorts.php" class="card">
-        <img src="../../assets/img/resorts.jpg" alt="hotels">
+        <img src="../../assets/img/resorts.webp" alt="hotels">
         <div class="card-content">
             <i class="fas fa-hotel"></i>
             <p>HOTELS</p>
@@ -33,7 +33,7 @@ $accommodations = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
     </a>
 
        <a href="resorts.php" class="card">
-        <img src="../../assets/img/resorts.jpg" alt="inns">
+        <img src="../../assets/img/resorts.webp" alt="inns">
         <div class="card-content">
             <i class="fas fa-bed"></i>
             <p>INNS</p>

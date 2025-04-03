@@ -208,9 +208,9 @@ if (!$business_id) {
                 $pendingBookings = 0;
                 $confirmedBookings = 0;
                 $cancelledBookings = 0;
-
+            
                 // Fetch detailed booking data for this business
-                $query = $conn->prepare("SELECT id, CONCAT(first_name, ' ', last_name) AS customer_name, status, arrival_date FROM bookings WHERE business_id = ? AND MONTH(arrival_date) = ? AND YEAR(arrival_date) = ? ORDER BY arrival_date DESC");
+                $query = $conn->prepare("SELECT id, CONCAT(first_name, ' ', last_name) AS customer_name, status, created_at FROM bookings WHERE business_id = ? AND MONTH(created_at) = ? AND YEAR(created_at) = ? ORDER BY created_at DESC");
                 $query->bind_param("iii", $business_id, $selected_month, $selected_year);
                 $query->execute();
                 $result = $query->get_result();
@@ -284,7 +284,7 @@ if (!$business_id) {
                             <td>B" . htmlspecialchars($row['id']) . "</td>
                             <td>" . htmlspecialchars($row['customer_name']) . "</td>
                             <td>" . htmlspecialchars($row['status']) . "</td>
-                            <td>" . date("d M Y", strtotime($row['arrival_date'])) . "</td>
+                            <td>" . date("d M Y", strtotime($row['created_at9'])) . "</td>
                           </tr>";
                                 }
                             } else {

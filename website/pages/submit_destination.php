@@ -41,12 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $phone = $_POST['phone'];
     $destinationName = $_POST['destinationName'];
-    $location = $_POST['location'];
+    $street = $_POST['street'];
+    $barangay = $_POST['barangay'];
+    $city = $_POST['city'];
+    $province = $_POST['province'];
+    $zipcode = $_POST['zipcode'];
     $description = $_POST['description'];
     $price = isset($_POST['price']) ? floatval($_POST['price']) : 0.0;
     $image = basename($_FILES['image']['name']); // Image file
 
 
+    $location = $street . ", " . $barangay  . ", " . $city . ", " . $province . ", " . $zipcode;
+    $location = str_replace(", ,", ",", $location); // Remove any double commas
+ 
     // File upload logic
     $targetDir = "../../assets/img/";
     $targetFile = $targetDir . $image;
@@ -77,14 +84,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_bind_param($stmt, "isssssss", $user_id, $email, $phone, $destinationName, $location, $description, $price, $image);
 
         if (mysqli_stmt_execute($stmt)) {
-            echo "Your business has been submitted for verification.";
+            header("Location: user-profile.php?success=" . urlencode("Upload successful! Your destination is under review."));
+            exit();
         } else {
             die("<p style='color: red;'>Database error during execution: " . mysqli_error($conn) . "</p>");
         }
 
         mysqli_stmt_close($stmt);
     } else {
-        die("<p style='color: red;'>Failed to upload the image.</p>");
+        header("Location: user-profile.php?error=" . urlencode("Failed to upload image"));
+        exit();
     }
 
     mysqli_close($conn);

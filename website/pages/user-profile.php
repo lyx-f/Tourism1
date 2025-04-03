@@ -73,6 +73,7 @@ include("../../includes/homepage_navbar.php");
     <link rel="stylesheet" href="../../assets/css/homepage.css">
     <link rel="stylesheet" href="../../assets/css/footer.css">
     <link rel="stylesheet" href="../../assets/css/user-profile.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <style>
     /* Booking Modal */
@@ -357,7 +358,7 @@ include("../../includes/homepage_navbar.php");
                 <div class="form-row">
                     <div class="form-group">
                         <label for="zip">ZIP Code:</label>
-                        <input type="text" id="zip" name="zip" placeholder="Enter ZIP code" required>
+                        <input type="text" id="zip" name="zipcode" placeholder="Enter ZIP code" required>
                     </div>
                     <div class="form-group">
                         <label for="country">Country:</label>
@@ -405,6 +406,30 @@ include("../../includes/homepage_navbar.php");
             closeBtn.addEventListener("click", () => modal.style.display = "none");
             window.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
         });
+        document.addEventListener("DOMContentLoaded", function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        })
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get("success");
+        const error = urlParams.get("error");
+        console.log(successMessage)
+        if (successMessage) {
+            Toast.fire({
+                icon: "success",
+                title: successMessage,
+            });
+        }else if(error){
+            Toast.fire({
+                icon: "error",
+                title: error,
+            });
+        }
+    });
     </script>
 </body>
 

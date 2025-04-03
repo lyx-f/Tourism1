@@ -69,6 +69,7 @@ if ($is_business_owner) {
 }
 
 
+
 function fetchBookings($business_id, $category)
 {
 
