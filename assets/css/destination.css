@@ -24,11 +24,12 @@ body {
 }
 
 .grid-container {
+    padding: 60px 20px 40px; /* Increased top padding to create space */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 30px;
-    max-width: 1500px;
+    /* max-width: 1500px; */
     width: 100%;
     margin-top: 20px; /* Extra margin for spacing */
 }
