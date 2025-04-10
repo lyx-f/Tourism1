@@ -238,7 +238,7 @@ $category = $business['category'] ?? 'accommodations'; // Default category
     document.addEventListener("DOMContentLoaded", function () {
         const Toast = Swal.mixin({
             toast: true,
-            position: 'top-end',
+            position: 'center',
             showConfirmButton: false,
             timer: 2000,
             timerProgressBar: true,
