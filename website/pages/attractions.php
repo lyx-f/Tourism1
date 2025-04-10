@@ -63,11 +63,10 @@ $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
                     <div class="card-header">
                         <img src="../../assets/img/<?php echo htmlspecialchars($attraction['image_url']); ?>"
                             alt="<?php echo htmlspecialchars($attraction['name']); ?>">
-                       
+                        <span class="badge"><?php echo htmlspecialchars($attraction['status']); ?></span>
                     </div>
                     <div class="card-body">
                         <h3><?= htmlspecialchars($attraction['name']); ?></h3>
-                        <!-- <span class="badge"><?php echo htmlspecialchars($attraction['status']); ?></span> -->
                     </div>
                 </div>
             <?php endforeach; ?>
