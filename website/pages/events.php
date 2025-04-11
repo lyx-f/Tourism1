@@ -28,7 +28,9 @@
     </div>
     
     <button class="submit-button">SUBMIT AN EVENT</button>
-    
-    <?php include('../../includes/footer.php'); ?>
+    <div class="footer-wrapper">
+          <?php include('../../includes/footer.php'); ?>
+    </div>
+  
 </body>
 </html>
