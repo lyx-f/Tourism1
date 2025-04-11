@@ -298,3 +298,7 @@ h4 {
 .submit-button:hover {
     background-color: #00251f;
 }
+
+.hidden{
+    display: none;
+}

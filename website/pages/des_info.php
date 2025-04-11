@@ -1,4 +1,12 @@
 <?php
+session_start();
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    die("User not logged in.");
+}
+
+
+$user_id = $_SESSION['user_id']; // Logged-in user ID
 
 include("../../includes/homepage_navbar.php");
 include('../../config/database.php');
@@ -20,6 +28,22 @@ if ($result->num_rows > 0) {
     echo "<p>Destination not found.</p>";
     exit;
 }
+
+
+function isBooked($destination_id, $user_id, $conn)
+{
+    // Fetch destination details from the database
+    $query = "SELECT * FROM bookings WHERE business_id = ? AND user_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ii", $destination_id, $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    return $result->num_rows > 0;
+}
+
+$showAddFeedback = isBooked($destination_id, $user_id, $conn);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +56,7 @@ if ($result->num_rows > 0) {
     <link rel="stylesheet" href="../../assets/css/information.css">
     <link rel="stylesheet" href="../../assets/css/footer.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -59,7 +83,9 @@ if ($result->num_rows > 0) {
                     <img src="<?= htmlspecialchars($mainImagePath) ?>" alt="Main Image">
                 </div>
             <?php else: ?>
-                <div style="display: flex; justify-content: center; align-items: center;color: #DEDEDE; border-radius: 20px; background-color: rgba(0, 109, 109, 0.79); height:100%">No main image available</div>
+                <div
+                    style="display: flex; justify-content: center; align-items: center;color: #DEDEDE; border-radius: 20px; background-color: rgba(0, 109, 109, 0.79); height:100%">
+                    No main image available</div>
             <?php endif; ?>
 
             <div class="image-grid">
@@ -151,7 +177,8 @@ if ($result->num_rows > 0) {
                     ?>
                 </div>
 
-                <form class="feedback-form" action="submit_feedback.php" method="POST">
+                <form class="feedback-form <?= !$showAddFeedback ? 'hidden' : '' ?>"  action="submit_feedback.php"
+                    method="POST">
                     <input type="hidden" name="destination_id" value="<?= $destination['id']; ?>">
                     <label for="name">Your Name:</label>
                     <input type="text" id="name" name="name" placeholder="Your Name" required>
@@ -177,5 +204,31 @@ if ($result->num_rows > 0) {
     <?php include('../../includes/footer.php'); ?>
 
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'center',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        });
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get("success");
+        const error = urlParams.get("error");
+
+        if (successMessage) {
+            Toast.fire({
+                icon: "success",
+                title: successMessage,
+            });
+        } else if (error) {
+            Toast.fire({
+                icon: "error",
+                title: "Something went wrong",
+            });
+        }
+    });
+</script>
 
 </html>

@@ -4,6 +4,8 @@ include('../../config/database.php');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize and validate inputs
     $destination_id = isset($_POST['destination_id']) ? intval($_POST['destination_id']) : 0;
@@ -19,7 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt) {
             $stmt->bind_param("isis", $destination_id, $name, $rating, $comment);
             if ($stmt->execute()) {
-                echo "Feedback submitted successfully!";
+                // Redirect back to the dashboard with a success message
+                header("Location: ../pages/des_info.php?id=" . $destination_id . "&success=" . urlencode("Feedback successfully submitted"));
+                exit();
             } else {
                 echo "Error: " . $stmt->error;
             }
