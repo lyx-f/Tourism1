@@ -13,6 +13,7 @@ body {
     background-attachment: fixed; 
     color: white;
     line-height: 1.6;
+    height: 100vh;
 }
 
 .container {
@@ -124,4 +125,8 @@ body {
 .map-button:hover {
     background-color: #004d40;
     cursor: pointer;
+}
+
+.wrapper{
+    padding: 20px;
 }

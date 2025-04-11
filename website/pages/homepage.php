@@ -46,12 +46,12 @@ if ($result) {
         <div class="destination-container">
             <?php if (!empty($destinations)): ?>
                 <?php foreach ($destinations as $destination):
-?>
+                    ?>
                     <div class="card">
-                        
+
                         <img src="<?= isset($destination['image_url']) && !empty($destination['image_url']) ? "../../assets/img/" . $destination['image_url'] : '../../assets/img/'; ?>"
                             alt="destination_image">
-                        
+
                         <h3><?= htmlspecialchars($destination['name']); ?></h3>
                         <p><?= htmlspecialchars($destination['description']); ?></p>
                         <a href="des_info.php?id=<?= $destination['id']; ?>">Read More</a>
@@ -88,9 +88,11 @@ if ($result) {
         </a>
     </div>
 
+    <div class="footer-wrapper">
+        <?php include('../../includes/footer.php'); ?>
+    </div>
 
-    <?php include('../../includes/footer.php'); ?>
 
-    </bodyc>
+</body>
 
 </html>
