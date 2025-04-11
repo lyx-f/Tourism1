@@ -125,17 +125,17 @@ $category = $business['category'] ?? 'accommodations'; // Default category
                 <h3>Select Ticket Type and Quantity</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="adult_quantity">Adult Tickets ($50 each):</label>
+                        <label for="adult_quantity">Adult Tickets (₱50 each):</label>
                         <input type="number" id="adult_quantity" name="adult_quantity" min="0" value="0" required
                             onchange="calculateBill()">
                     </div>
                     <div class="form-group">
-                        <label for="senior_quantity">Senior Tickets ($40 each):</label>
+                        <label for="senior_quantity">Senior Tickets (₱40 each):</label>
                         <input type="number" id="senior_quantity" name="senior_quantity" min="0" value="0" required
                             onchange="calculateBill()">
                     </div>
                     <div class="form-group">
-                        <label for="child_quantity">Child Tickets ($30 each):</label>
+                        <label for="child_quantity">Child Tickets (₱30 each):</label>
                         <input type="number" id="child_quantity" name="child_quantity" min="0" value="0" required
                             onchange="calculateBill()">
                     </div>
@@ -156,9 +156,9 @@ $category = $business['category'] ?? 'accommodations'; // Default category
                     <div class="form-group">
                         <label for="attractions_cottage_type">Select Cottage Type:</label>
                         <select id="attractions_cottage_type" name="attractions_cottage_type" required>
-                            <option value="standard">Standard - $50</option>
-                            <option value="family">Family - $120</option>
-                            <option value="group">Group - $250</option>
+                            <option value="standard">Standard - ₱50</option>
+                            <option value="family">Family - ₱120</option>
+                            <option value="group">Group - ₱250</option>
                         </select>
                     </div>
                 </div>
@@ -168,9 +168,9 @@ $category = $business['category'] ?? 'accommodations'; // Default category
                     <div class="form-group">
                         <label for="attractions_room_type">Room Type:</label>
                         <select id="attractions_room_type" name="attractions_room_type">
-                            <option value="single">Single - $80</option>
-                            <option value="double">Double - $120</option>
-                            <option value="family">Family - $200</option>
+                            <option value="single">Single - ₱80</option>
+                            <option value="double">Double - ₱120</option>
+                            <option value="family">Family - ₱200</option>
                         </select>
                     </div>
                 </div>
@@ -224,7 +224,7 @@ $category = $business['category'] ?? 'accommodations'; // Default category
 
             <?php endif; ?>
 
-            <p id="total_bill">Total Bill: $0.00</p>
+            <p id="total_bill">Total Bill: ₱0.00</p>
             <button type="submit" class="btn-submit" name="category" value="<?= $category ?>">BOOK NOW</button>
         </form>
     </div>
