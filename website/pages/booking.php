@@ -229,12 +229,13 @@ $category = $business['category'] ?? 'accommodations'; // Default category
         </form>
     </div>
 
-
-    <?php include("../../includes/footer.php"); ?>
+    <div class="footer-wrapper">
+        <?php include("../../includes/footer.php"); ?>
+    </div>
 </body>
 
 <script>
-      
+
     document.addEventListener("DOMContentLoaded", function () {
         const Toast = Swal.mixin({
             toast: true,
@@ -242,7 +243,7 @@ $category = $business['category'] ?? 'accommodations'; // Default category
             showConfirmButton: false,
             timer: 2000,
             timerProgressBar: true,
-        })
+        });
         const urlParams = new URLSearchParams(window.location.search);
         const successMessage = urlParams.get("success");
         const error = urlParams.get("error");
@@ -252,7 +253,7 @@ $category = $business['category'] ?? 'accommodations'; // Default category
                 icon: "success",
                 title: successMessage,
             });
-        }else if(error){
+        } else if (error) {
             Toast.fire({
                 icon: "error",
                 title: "Something went wrong",
