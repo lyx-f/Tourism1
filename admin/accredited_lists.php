@@ -20,7 +20,7 @@ include('includes/header.php');
 </head>
 
 <body>
-    <h1>Businesse</h1>
+    <h1>Businesses</h1>
 
     <table border="1">
         <tr>
