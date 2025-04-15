@@ -26,7 +26,7 @@ $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
 <body>
 
     <div class="grid-container">
-        <a href="resorts.php" class="card">
+        <a href="./attractions/resorts.php" class="card">
             <img src="../../assets/img/resorts.webp" alt="Resorts">
             <div class="card-content">
                 <i class="fas fa-umbrella-beach"></i>
@@ -34,7 +34,7 @@ $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
             </div>
         </a>
 
-        <a href="parks.php" class="card">
+        <a href="./attractions/parks.php" class="card">
             <img src="../../assets/img/park.jpg" alt="Parks">
             <div class="card-content">
                 <i class="fas fa-tree"></i>
@@ -42,7 +42,7 @@ $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
             </div>
         </a>
 
-        <a href="agri_tourism.php" class="card">
+        <a href="./attractions/agri.php" class="card">
             <img src="../../assets/img/agri-tourism.png" alt="Agri-Tourism">
             <div class="card-content">
                 <i class="fas fa-seedling"></i>
@@ -50,14 +50,14 @@ $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
             </div>
         </a>
 
-        <a href="museums.php" class="card">
+        <a href="./attractions/museums.php" class="card">
             <img src="../../assets/img/museum.jpg" alt="Museums">
             <div class="card-content">
                 <i class="fas fa-landmark"></i>
                 <p>MUSEUMS</p>
             </div>
         </a>
-        <?php if (!empty($attractions)): ?>
+        <!-- <?php if (!empty($attractions)): ?>
             <?php foreach ($attractions as $attraction): ?>
                 <div class="card" onclick="window.location.href='des_info.php?id=<?= $attraction['id']; ?>'">
                     <div class="card-header">
@@ -72,11 +72,11 @@ $attractions = $result->num_rows > 0 ? $result->fetch_all(MYSQLI_ASSOC) : [];
             <?php endforeach; ?>
         <?php else: ?>
             <p>No attractions available at the moment.</p>
-        <?php endif; ?>
+        <?php endif; ?> -->
     </div>
 
     <div class="card-grid">
-        
+
     </div>
     </div>
 

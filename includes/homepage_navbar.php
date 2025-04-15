@@ -1,5 +1,6 @@
 <?php
-include "../../config/database.php";
+include __DIR__ . '/../config/database.php';
+define('BASE_URL', '/Tourism1');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["search-data"]) && !empty(trim($_POST["search-data"]))) {
     $searchData = trim($_POST["search-data"]);
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["search-data"]) && !em
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="../../assets/css/homepage_navbar.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/homepage_navbar.css">
     <style>
         .modal {
             display: none;
@@ -98,12 +99,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST["search-data"]) && !em
 
     <header class="container">
         <a href="homepage.php" class="logo">
-            <img src="../../assets/img/ok.png" alt="Logo" />
+            <img src="<?php echo BASE_URL; ?>/assets/img/ok.png" alt="Logo" />
         </a>
         <nav>
-            <a href="homepage.php">Home</a>
-            <a href="destinations.php">Mati Experience</a>
-            <a href="../pages/contact.php">Contact Us</a>
+            <a href="<?php echo BASE_URL; ?>/website/pages/homepage.php">Home</a>
+            <a href="<?php echo BASE_URL; ?>/website/pages/destinations.php">Mati Experience</a>
+            <a href="<?php echo BASE_URL; ?>/website/pages/contact.php">Contact Us</a>
         </nav>
 
         <div class="search-profile">
