@@ -1,10 +1,5 @@
 <?php
 session_start();
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    die("User not logged in.");
-}
-
 
 $user_id = $_SESSION['user_id']; // Logged-in user ID
 
