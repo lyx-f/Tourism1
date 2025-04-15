@@ -1,4 +1,6 @@
-<?php include("../../includes/homepage_navbar.php"); ?>
+<?php include("../../includes/homepage_navbar.php"); 
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +12,7 @@
     <link rel="stylesheet" href="../../assets/css/homepage.css">
     <link rel="stylesheet" href="../../assets/css/footer.css">
     <link rel="stylesheet" href="../../assets/css/contact.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -59,5 +62,31 @@
     </div>
 
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'center',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        });
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get("success");
+        const error = urlParams.get("error");
+
+        if (successMessage) {
+            Toast.fire({
+                icon: "success",
+                title: successMessage,
+            });
+        } else if (error) {
+            Toast.fire({
+                icon: "error",
+                title: "Something went wrong",
+            });
+        }
+    });
+</script>
 
 </html>
